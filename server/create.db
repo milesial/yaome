@@ -1,0 +1,11 @@
+CREATE TABLE users (
+  id uuid PRIMARY KEY,
+  creation_date TIMESTAMP WITH TIME ZONE,
+  last_seen TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE logins (
+  id uuid PRIMARY KEY REFERENCES users(id),
+  username VARCHAR (60) UNIQUE NOT NULL,
+  password VARCHAR (60) NOT NULL
+);
