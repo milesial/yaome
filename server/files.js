@@ -1,20 +1,9 @@
-var glob = require("glob")
-const fs = require('fs')
+const fse = require('fs-extra')
+const dirTree = require("directory-tree")
 
-function getFilePath(userId, name) {
-  return `./files/${userId}/${name}`
-}
-
-function newFile(userId, name) {
-
-}
-
-function getFileHierarchy(userID) {
-  glob(`./files/${userId}/**/*`, options, function (er, files) {
-    
-  })
-}
-
-function newDirectoryForUser(userID, next) {
-
+module.exports = {
+  createFile: (userId, name) => fse.createFile(`./files/${userId}/${name}`),
+  deleteFileOrDir: (userId, name) => fse.remove(`./files/${userId}/${name}`),
+  getFileHierarchy: (userId) => dirTree(`./files/${userId}`, { attributes: ['name', 'path'] }),
+  createDirectory: (userId, name) => mkdirs(`./files/${userId}/${name}`),
 }

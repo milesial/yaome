@@ -1,11 +1,11 @@
 {
   "database": {
-    "host": "REDACTED",
-    "port": 1337,
-    "db":   "REDACTED",
-    "user": "REDACTED",
-    "pass": "REDACTED"
+    "host": "127.0.0.1",
+    "port": 5432,
+    "db":   "postgres",
+    "user": "postgres",
+    "pass": "H/.9FYZ`x9T%tCw%"
   },
   "port": 80,
-  "secret": "REDACTED"
+  "secret": "e1eb764d0c7450b5e685af875e2d840d81f3939d2cc6777c5ab2b0ff45574067"
 }

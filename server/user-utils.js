@@ -1,13 +1,10 @@
 const crypto = require('crypto')
-const fs = require('fs')
+const fse = require('fs-extra')
 const bcrypt = require('bcrypt')
-const util = require('util')
 const db = require('./db.js')
 
-const mkdir = util.promisify(fs.mkdir)
-
 module.exports = {
-  initNewUser: function() {
+  initUser: function() {
     return createUserEntry()
       .then(id => createUserDirectory(id))
   },
@@ -15,6 +12,11 @@ module.exports = {
     return bcrypt.hash(password, 10)
       .then(hash => createLoginEntry(userId, username, hash))
   },
+  deleteUser: function(userId) {
+    return deleteLoginEntry(userId)
+      .then(() => deleteUserEntry(userId))
+      .then(() => deleteUserDirectory(userId))
+  }
 }
 
 function createUserEntry() {
@@ -29,7 +31,7 @@ function createUserEntry() {
 
 function createUserDirectory(userId) {
   return new Promise((resolve, reject) => {
-    mkdir(`./files/${userId}`, { recursive: true })
+    fse.mkdir(`./files/${userId}`, { recursive: true })
       .then(() => resolve(userId))
       .catch(err => reject(err))
   })
@@ -40,9 +42,17 @@ function createLoginEntry(userId, username, hash) {
 }
 
 function deleteUserDirectory(userId) {
+    return fse.remove(getUserDirectory(userId))
+}
 
+function deleteLoginEntry(userId) {
+  return db.query('DELETE FROM logins WHERE id = $1', [userId])
 }
 
 function deleteUserEntry(userId) {
-  db.query('DELETE FROM users WHERE id = $1', [id])
+  return db.query('DELETE FROM users WHERE id = $1', [userId])
+}
+
+function getUserDirectory(userId) {
+  return `./files/${userId}`
 }
