@@ -1,0 +1,11 @@
+{
+  "database": {
+    "host": "REDACTED",
+    "port": 1337,
+    "db":   "REDACTED",
+    "user": "REDACTED",
+    "pass": "REDACTED"
+  },
+  "port": 80,
+  "secret": "REDACTED"
+}
