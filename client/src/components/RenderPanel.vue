@@ -6,7 +6,8 @@
         <v-spacer></v-spacer>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" icon download="render.pdf" :href="pdfURL">
+            <a style="visibility: hidden;" id="downloadLink"></a>
+            <v-btn v-on="on" icon @click="download" :loading="preparingDL">
               <v-icon>mdi-file-download-outline</v-icon>
             </v-btn>
           </template>
@@ -57,6 +58,7 @@
 <script>
 import store from '../store.js';
 import pdf from 'vue-pdf'
+import { requestRender } from '../render.js'
 
 export default {
   components: {
@@ -65,6 +67,7 @@ export default {
   data : () => ({
     sharedState: store.state,
     renderStatus: 0,
+    preparingDL: false
   }),
   computed: {
     pdfArray: function() {
@@ -76,6 +79,22 @@ export default {
     pdfURL: function() {
       return URL.createObjectURL(new Blob([this.pdfArray]))
     },
+  },
+  methods: {
+    download: function() {
+      this.preparingDL = true
+      let vm = this
+      let s = this.sharedState
+      let format = s.availableFormats[s.selectedFormatId]
+      requestRender(s.markdown, format, function(res) {
+        let a = document.getElementById('downloadLink')
+        let blob = new Blob([res])
+        a.href = window.URL.createObjectURL(blob);
+        a.download = vm.sharedState.files.selected.split('.')[0] + '.' + format
+        a.click()
+        vm.preparingDL = false
+			}, { download: true })
+    }
   }
 }
 </script>

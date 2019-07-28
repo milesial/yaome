@@ -3,7 +3,7 @@ const sessions = require('client-sessions')
 const { exec } = require('child_process')
 const options = require('./options')
 const { initUser, registerUser, deleteUser } = require('./user-utils.js')
-const { getFileHierarchy } = require('./files.js')
+const { getFileHierarchy, createFile, createDirectory, deleteFileOrDir } = require('./files.js')
 
 const app = express()
 
@@ -74,8 +74,11 @@ app.post('/render/:output', express.json(), (req, res, next) => {
   let md = req.body.markdown
 
   let options = ['--mathjax']
-  if (req.body.standalone)
-    options.append('-s')
+  console.log(req.body.download)
+  if (req.body.download) {
+    options.push('-s')
+    res.set('Content-Disposition', `attachment; filename="${req.body.file}.${format}"`)
+  }
 
   let suffix = ''
   if (format == 'pdf')
@@ -91,17 +94,47 @@ app.post('/render/:output', express.json(), (req, res, next) => {
     else if (format == 'html')
       res.set('content-type', 'text/html').send(stdout)
   })
-  next()
 })
 
 // get the user's files in a tree structure (json)
-app.get('/tree', (req, res, next) => {
+app.get('/files', (req, res, next) => {
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
   res.set('Pragma', 'no-cache')
   res.set('Expires', '0')
 
   res.send(getFileHierarchy(req.session.id))
   next()
+})
+
+// create a file or a directory
+app.post('/files', express.urlencoded({ extended: false }), (req, res, next) => {
+  if (!req.body.name || !req.body.type)
+    next('Need a name and a type')
+
+  if (!['directory', 'file'].contains(req.body.type))
+    next('Type must be a file or a directory')
+
+  let path = req.body.name.replace('../', '')
+  if (req.body.type == 'file') {
+    createFile(path)
+      .catch(next)
+      .then(() => res.end())
+  } else {
+    createDirectory(path)
+      .catch(next)
+      .then(() => res.end())
+  }
+})
+
+// delete a file or a directory
+app.delete('/files', express.urlencoded({ extended: false }), (req, res, next) => {
+  if (!req.body.name)
+    next('Need a name')
+
+  let path = req.body.name.replace('../', '')
+  deleteFileOrDir(path)
+    .catch(next)
+    .then(() => res.end())
 })
 
 app.listen(options.port, () => console.log(`App listening on port ${options.port}`))

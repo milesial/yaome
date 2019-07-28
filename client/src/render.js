@@ -1,4 +1,5 @@
-export function requestRender(markdown, format, callback) {
+export function requestRender(markdown, format, callback, options={}) {
+  //TODO: promise
   let xhttp = new XMLHttpRequest();
 
   if (format == 'pdf') {
@@ -18,5 +19,7 @@ export function requestRender(markdown, format, callback) {
 
   xhttp.open("POST", `http://localhost/render/${format}`, true);
   xhttp.setRequestHeader("Content-type", "application/json");
-  xhttp.send(JSON.stringify({file: "main.md", markdown, format}))
+  options.file = 'main.md'
+  options.markdown = markdown
+  xhttp.send(JSON.stringify(options))
 }
