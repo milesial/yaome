@@ -1,12 +1,11 @@
 var store = {
-  state: {
-    availableFormats: ['html', 'pdf'],
-    selectedFormatId: 0,
-    render : { html: '', pdf: '' },
-    markdown: '',
-    files: {
-      selected: 'main.md'
-    }
+  availableFormats: ['html', 'pdf'],
+  selectedFormatId: 0,
+  render: { html: '', pdf: '' },
+  rendering: false,
+  markdown: '',
+  files: {
+    selected: 'main.md'
   }
 }
 

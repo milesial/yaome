@@ -1,4 +1,6 @@
-export function requestRender(markdown, format, callback, options={}) {
+import store from './store.js'
+
+export function requestRender(markdown, format, options={}, callback=()=>{}) {
   //TODO: promise
   let xhttp = new XMLHttpRequest();
 
@@ -22,4 +24,14 @@ export function requestRender(markdown, format, callback, options={}) {
   options.file = 'main.md'
   options.markdown = markdown
   xhttp.send(JSON.stringify(options))
+}
+
+export function updateCurrentRender(options={}, callback=()=>{}) {
+    store.rendering = true
+    let format = store.availableFormats[store.selectedFormatId]
+    requestRender(store.markdown, format, options, (res) => {
+        store.render[format] = res
+        store.rendering = false
+        callback(res)
+    })
 }

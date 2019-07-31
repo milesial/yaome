@@ -8,7 +8,7 @@
     </v-flex>
     <v-flex id="editbox" class="mx-1 my-0">
       <v-textarea
-        v-model="sharedState.markdown"
+        v-model="store.markdown"
         autofocus
         flat
         no-resize
@@ -19,27 +19,20 @@
 
 <script>
 import store from '../store.js';
-import { requestRender } from '../render.js'
+import { updateCurrentRender } from '../render.js'
 import _ from 'lodash'
 
 export default {
   data: () => ({
-    sharedState: store.state
+    store: store
   }),
   watch: {
-    'sharedState.markdown': function(newT) {
-      this.render(newT)
+    'store.markdown': function(){
+      this.render()  
     }
   },
   methods: {
-    render: _.debounce(function (text) {
-      let vm = this
-      let s = this.sharedState
-      let format = s.availableFormats[s.selectedFormatId]
-      requestRender(text, format, function(res) {
-        vm.sharedState.render[format] = res
-			})
-    }, 200),
+    render: _.debounce(updateCurrentRender, 200),
   }
 }
 </script>

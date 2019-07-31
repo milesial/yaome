@@ -74,7 +74,6 @@ app.post('/render/:output', express.json(), (req, res, next) => {
   let md = req.body.markdown
 
   let options = ['--mathjax']
-  console.log(req.body.download)
   if (req.body.download) {
     options.push('-s')
     res.set('Content-Disposition', `attachment; filename="${req.body.file}.${format}"`)
