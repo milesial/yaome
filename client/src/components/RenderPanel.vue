@@ -127,6 +127,10 @@ export default {
           })
         }
       })
+      .catch(function(err) {
+        if (err.message != 'PDFDocument: Stream must have data')
+          console.log(err)
+      })
     }
   }
 }

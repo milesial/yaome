@@ -32,11 +32,13 @@ export default {
   }),
   mounted: function() {
     makeResizableDiv(this.$refs.rightpanel, this.$refs.resizer)
+    // fix for the pdf generation without any resizes first
+    this.$refs.rightpanel.style.width = this.$refs.rightpanel.parentElement.offsetWidth / 2 + 'px'
+    this.$refs.rightpanel.style.flexGrow = 0
   }
 }
 
 function makeResizableDiv(divright, resizer) {
-  //TODO: bug when switching to pdf without resizing first
   resizer.addEventListener('mousedown', function(e) {
     e.preventDefault()
     window.addEventListener('mousemove', resize)
@@ -44,7 +46,7 @@ function makeResizableDiv(divright, resizer) {
   })
   
   function resize(e) {
-    let relativePos = divright.getBoundingClientRect().right - e.pageX -resizer.getBoundingClientRect().width / 2 + 'px';
+    let relativePos = divright.getBoundingClientRect().right - e.pageX - resizer.getBoundingClientRect().width / 2 + 'px';
     divright.style.width = relativePos
     divright.style.flexGrow = 0
   }
