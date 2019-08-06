@@ -64,7 +64,7 @@ function makeResizableDiv(divright, resizer) {
 
 #resizer {
   cursor: col-resize;
-  width: 20px;
+  width: 15px;
   padding: 0;
   flex: 0 0 auto;
 }
@@ -72,7 +72,7 @@ function makeResizableDiv(divright, resizer) {
 #resizer::before {
   content: '';
   display: block;
-  width: 4px;
+  width: 5px;
   height: 100%;
   margin: 0 auto;
 }
@@ -82,4 +82,5 @@ function makeResizableDiv(divright, resizer) {
   min-width: 20%;
   flex: 1 1 auto;
 }
+
 </style>

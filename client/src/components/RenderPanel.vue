@@ -1,12 +1,12 @@
 <template>
-  <v-layout column fill-height class="ma-0">
+  <v-layout column fill-height class="ma-0" id="render-layout" ref="renderLayout" style="position:relative;" v-scroll:#render-container="onScroll">
     <v-flex shrink>
       <v-toolbar flat dense>
         <v-toolbar-title>Render</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <a id="downloadHiddenLink"></a>
+            <a id="dl-hidden-link"></a>
             <v-btn v-on="on" icon @click="download" :loading="preparingDL">
               <v-icon>mdi-file-download-outline</v-icon>
             </v-btn>
@@ -34,7 +34,7 @@
       </v-toolbar>
       <v-divider></v-divider>
     </v-flex>
-    <v-flex id="render-container">
+    <v-flex id="render-container" >
       <v-tabs-items v-model="store.selectedFormatId">
         <v-tab-item class="tab-content" key="html">
           <v-card flat>
@@ -42,14 +42,24 @@
             <div id="render-html" class="text-left pa-4" v-html="store.render.html"></div>
           </v-card>
         </v-tab-item>
-        <v-tab-item class="tab-content" key="pdf">
+        <v-tab-item class="tab-content" key="pdf" ref="pdfContent">
           <div v-for="p in pdfPages">
             <PdfPage :page="p" scale="2"/>
           </div>
         </v-tab-item>
       </v-tabs-items>
+      <v-fade-transition>
+        <v-pagination
+            v-if="store.selectedFormatId == 1 && pdfPages.length > 1"
+            id="page-select"
+            v-model="pagination"
+            :length="pdfNumPages"
+            @input="pdfPageChanged"
+            circle
+          ></v-pagination>
+      </v-fade-transition>
     </v-flex>
-    <v-progress-linear bottom :active="store.rendering" indeterminate/>
+    <v-progress-linear bottom value="100" :color="progressColor" :indeterminate="store.rendering || pdfPages.length < pdfNumPages"/>
   </v-layout>
 </template>
 
@@ -59,23 +69,31 @@ import pdf from 'vue-pdf'
 import { requestRender, updateCurrentRender } from '../render.js'
 import * as PDFJSMain from "pdfjs-dist/build/pdf"
 import PdfPage from './PdfPage.vue'
+import { Scroll } from 'vuetify/lib/directives'
 
 export default {
-  components: {
-    pdf,
-    PdfPage
-  },
+  components: { pdf, PdfPage },
+  directives: { Scroll },
   data : () => ({
     store: store,
     renderStatus: 0,
     preparingDL: false,
     renderingSmoothed: false, // rendering boolean without short spikes
-    pdfPages: []
+    pdfPages: [],
+    pagination: 1,
+    pdfNumPages: 0
   }),
   computed: {
     pdfArray: function() {
       return new Uint8Array(this.store.render.pdf);
     },
+    progressColor: function() {
+        if(this.store.markdown == this.store.renderedMarkdown && !this.store.rendering) {
+            return "success"
+        } else {
+            return "primary"
+        }
+    }
   },
   watch: {
     'store.rendering': function(value) {
@@ -100,7 +118,7 @@ export default {
       let s = this.store
       let format = s.availableFormats[s.selectedFormatId]
       requestRender(s.markdown, format, {download: true}, function(res) {
-        let a = document.getElementById('downloadHiddenLink')
+        let a = document.getElementById('dl-hidden-link')
         let blob = new Blob([res])
         a.href = window.URL.createObjectURL(blob);
         a.download = vm.store.files.selected.split('.')[0] + '.' + format
@@ -121,9 +139,11 @@ export default {
       this.pdfPages = []
       let loadingTask = PDFJSMain.getDocument(this.pdfArray);
       loadingTask.promise.then(function(pdf) {
+        vm.pdfNumPages = pdf.numPages
         for(let i = 0; i < pdf.numPages; i++) {
           pdf.getPage(i+1).then(function(page) {
             vm.pdfPages.push(page)
+            console.log(page)
           })
         }
       })
@@ -131,6 +151,15 @@ export default {
         if (err.message != 'PDFDocument: Stream must have data')
           console.log(err)
       })
+    },
+    onScroll: function(e) {
+      let h = this.$refs.pdfContent.$el.children[0].offsetHeight
+      let ch = this.$refs.renderLayout.offsetHeight
+      console.log(ch)
+      this.pagination = Math.ceil((e.target.scrollTop + ch/2) / h)
+    },
+    pdfPageChanged: function(i) {
+      this.$vuetify.goTo(this.$refs.pdfContent.$el.children[i-1].offsetTop, { container: '#render-container', duration: 250 })
     }
   }
 }
@@ -142,16 +171,28 @@ export default {
   max-height: 0px; /* Needed in order for the scroll to work */
 }
 
-#downloadHiddenLink {
+#dl-hidden-link {
   visibility: hidden;
 }
 
 #render-container {
   color: black;
-  overflow: auto;
+  overflow: auto; /* Needed for the scroll */
 }
 
 #render-html {
   overflow-wrap: break-word;
 }
+
+#page-select {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#render-layout {
+  position: relative; /* So the pdf page select aligns to the bottom */
+}
+
 </style>

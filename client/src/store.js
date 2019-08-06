@@ -4,6 +4,7 @@ var store = {
   render: { html: '', pdf: '' },
   rendering: false,
   markdown: '',
+  renderedMarkdown: '',
   files: {
     selected: 'main.md'
   }
