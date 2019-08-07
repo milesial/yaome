@@ -1,12 +1,13 @@
 <template>
-  <div ref="container" class="container pa-0 ma-0" v-resize="clearTextLayer" v-resize:debounce="renderTextLayer">
-      <div class="textLayer" ref="textLayer"></div>
-      <canvas ref="canvas"></canvas>
+  <div    ref="container"
+    class="container pa-0 ma-0"    v-resize="clearTextLayer"    v-resize:debounce="renderTextLayer"
+  >
+    <div class="textLayer" ref="textLayer"></div>
+    <canvas ref="canvas"></canvas>
   </div>
 </template>
 
 <script>
-import * as PDFJSMain from "pdfjs-dist/webpack"
 import * as PDFJSViewer from "pdfjs-dist/web/pdf_viewer.js"
 import 'pdfjs-dist/web/pdf_viewer.css'
 import resize from 'vue-resize-directive'
@@ -15,14 +16,11 @@ export default {
   directives: {
     resize
   },
-  props: ['page', 'scale'],
+  props: ['page'],
   mounted: function() {
-    let container = this.$refs.container
     let page = this.page
     let viewport = page.getViewport({ scale: 2 });
-
     let canvas = this.$refs.canvas
-    let textDiv = this.$refs.textLayer
     let context = canvas.getContext('2d')
     canvas.height = viewport.height
     canvas.width = viewport.width
@@ -31,11 +29,10 @@ export default {
       canvasContext: context,
       viewport: viewport
     }
-    let vm = this
-    
+
     page.render(renderContext).promise
-      .then(function() {
-        vm.renderTextLayer()
+      .then(() => {
+        this.renderTextLayer()
       })
   },
   methods: {
@@ -50,8 +47,7 @@ export default {
       this.page.getTextContent()
         .then(function(textContent) {
           let textLayer = new PDFJSViewer.TextLayerBuilder({
-            textLayerDiv: textDiv, 
-            pageIndex: page.pageIndex,
+            textLayerDiv: textDiv,            pageIndex: page.pageIndex,
             viewport: viewport
           })
           textLayer.setTextContent(textContent)

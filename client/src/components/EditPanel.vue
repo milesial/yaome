@@ -1,5 +1,9 @@
 <template>
-  <v-layout column fill-height class="ma-0">
+  <v-layout
+    column
+    fill-height
+    class="ma-0"
+  >
     <v-flex shrink>
       <v-toolbar flat dense>
         <v-toolbar-title>Edit</v-toolbar-title>

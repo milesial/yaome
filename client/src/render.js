@@ -27,13 +27,13 @@ export function requestRender(markdown, format, options={}, callback=()=>{}) {
 }
 
 export function updateCurrentRender(options={}, callback=()=>{}) {
-    store.rendering = true
-    let format = store.availableFormats[store.selectedFormatId]
-    let md = store.markdown
-    requestRender(md, format, options, (res) => {
-        store.render[format] = res
-        store.rendering = false
-        store.renderedMarkdown = md
-        callback(res)
-    })
+  store.rendering = true
+  let format = store.availableFormats[store.selectedFormatId]
+  let md = store.markdown
+  requestRender(md, format, options, (res) => {
+    store.render[format] = res
+    store.rendering = false
+    store.renderedMarkdown = md
+    callback(res)
+  })
 }

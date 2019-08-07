@@ -9,8 +9,23 @@
           </v-flex>
           <div id="resizer" ref="resizer"></div>
           <v-flex class="flex-panel pl-0" ref="rightpanel">
-            <v-card class="panel"><RenderPanel/></v-card>
+            <v-card class="panel"><RenderPanel @error="showErrorSnackbar"/></v-card>
           </v-flex>
+          <v-snackbar
+            v-model="snackbar.show"
+            bottom
+            :timeout="5000"
+            :color="snackbar.color"
+          >
+            {{ snackbar.text }}
+            <v-btn
+              dark
+              text
+              @click="snackbar.show = false"
+            >
+              Close
+            </v-btn>
+          </v-snackbar>
         </v-layout>
       </v-container>
     </v-content>
@@ -18,8 +33,8 @@
 </template>
 
 <script>
-import RenderPanel from './components/RenderPanel';
-import EditPanel from './components/EditPanel';
+import RenderPanel from './components/RenderPanel'
+import EditPanel from './components/EditPanel'
 
 export default {
   name: 'App',
@@ -28,13 +43,24 @@ export default {
     EditPanel
   },
   data: () => ({
-
+    snackbar: {
+      show: false,
+      text: '',
+      color: '',
+    }
   }),
   mounted: function() {
     makeResizableDiv(this.$refs.rightpanel, this.$refs.resizer)
     // fix for the pdf generation without any resizes first
     this.$refs.rightpanel.style.width = this.$refs.rightpanel.parentElement.offsetWidth / 2 + 'px'
     this.$refs.rightpanel.style.flexGrow = 0
+  },
+  methods: {
+    showErrorSnackbar: function(text) {
+      this.snackbar.text = text
+      this.snackbar.color = 'error'
+      this.snackbar.show = true
+    }
   }
 }
 
@@ -44,9 +70,9 @@ function makeResizableDiv(divright, resizer) {
     window.addEventListener('mousemove', resize)
     window.addEventListener('mouseup', stopResize)
   })
-  
+
   function resize(e) {
-    let relativePos = divright.getBoundingClientRect().right - e.pageX - resizer.getBoundingClientRect().width / 2 + 'px';
+    let relativePos = divright.getBoundingClientRect().right - e.pageX - resizer.getBoundingClientRect().width / 2 + 'px'
     divright.style.width = relativePos
     divright.style.flexGrow = 0
   }
