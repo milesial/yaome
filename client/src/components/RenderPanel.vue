@@ -15,27 +15,32 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <a id="dl-hidden-link"></a>
-            <v-btn
-              v-on="on"
-              @click="download"
-              :loading="preparingDL"
-              icon
-            >
-              <v-icon>mdi-file-download-outline</v-icon>
-            </v-btn>
+            <div v-on="on">
+              <v-btn
+                @click="download"
+                :loading="preparingDL"
+                :disabled="markdownIsEmpty"
+                icon
+              >
+                <v-icon>mdi-file-download-outline</v-icon>
+              </v-btn>
+            </div>
           </template>
           <span>Download file</span>
         </v-tooltip>
         <!-- refresh button -->
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              @click="updateManual"
-              :loading="renderingSmoothed"              icon
-            >
-              <v-icon>mdi-refresh</v-icon>
-            </v-btn>
+            <div v-on="on">
+              <v-btn
+                @click="updateManual"
+                :loading="renderingSmoothed"
+                :disabled="markdownIsEmpty"
+                icon
+              >
+                <v-icon>mdi-refresh</v-icon>
+              </v-btn>
+            </div>
           </template>
           <span>Refresh</span>
         </v-tooltip>
@@ -48,16 +53,17 @@
         <v-flex shrink>
           <v-tabs
             v-model="store.selectedFormatId"
-            @change="update"
+            @change="updateManual"
             right
           >
-            <v-tab v-for="f in store.availableFormats" :key="f">{{ f }}</v-tab>
+            <v-tab v-for="f in store.availableFormats" :key="f" :disabled="markdownIsEmpty">{{ f }}</v-tab>
           </v-tabs>
         </v-flex>
       </v-toolbar>
       <v-divider></v-divider>
     </v-flex>
-    <v-flex id="render-container" >
+    <EmptyRender v-show="markdownIsEmpty"/>
+    <v-flex v-show="!markdownIsEmpty" id="render-container" class="py-0">
       <v-tabs-items v-model="store.selectedFormatId">
         <v-tab-item class="tab-content" key="html">
           <v-card flat>
@@ -66,13 +72,12 @@
               id="render-html"
               class="text-left pa-4"
               v-html="store.render.html"
+              :key="store.render.html"
             ></div>
           </v-card>
         </v-tab-item>
         <v-tab-item class="tab-content" key="pdf" ref="pdfContent">
-          <div v-for="p in pdfPages">
-            <PdfPage :page="p" scale="2"/>
-          </div>
+          <PdfPage v-for="p in pdfPages" :key="p.__ob__.dep.id" :page="p"/>
         </v-tab-item>
       </v-tabs-items>
       <v-fade-transition>
@@ -83,6 +88,7 @@
           :length="pdfNumPages"
           @input="pdfPageChanged"
           circle
+          color="secondary"
         ></v-pagination>
       </v-fade-transition>
     </v-flex>
@@ -97,14 +103,15 @@
 
 <script>
 import store from '../store.js';
-import pdf from 'vue-pdf'
 import { requestRender, updateCurrentRender } from '../render.js'
 import PdfPage from './PdfPage.vue'
+import EmptyRender from './EmptyRender.vue'
 import * as PDFJSMain from "pdfjs-dist/build/pdf"
 import { Scroll } from 'vuetify/lib/directives'
+import _ from 'lodash'
 
 export default {
-  components: { pdf, PdfPage },
+  components: { PdfPage, EmptyRender },
     directives: { Scroll },
     data : () => ({
       store: store,
@@ -113,8 +120,12 @@ export default {
       renderingSmoothed: false, // rendering boolean without short spikes
       pdfPages: [],
       pagination: 1,
-      pdfNumPages: 0
+      pdfNumPages: 0,
+      forcedScrolling: false
     }),
+    created: function() {
+      this.update = _.debounce(this.update, 200)
+    },
     computed: {
       pdfArray: function() {
         return new Uint8Array(this.store.render.pdf)
@@ -134,6 +145,9 @@ export default {
       },
       selectedFormat: function() {
         return this.store.availableFormats[this.store.selectedFormatId]
+      },
+      markdownIsEmpty: function() {
+        return this.store.markdown.trim() == ''
       }
     },
     watch: {
@@ -147,61 +161,74 @@ export default {
           }, 400)
         }
       },
-        'pdfArray': function() {
-          this.renderPDF()
-        }
+      'pdfArray': function() {
+        this.renderPDF()
+      },
+      'store.markdown': function() {
+        this.update()
+      }
     },
     methods: {
       download: function() {
         this.preparingDL = true
-        requestRender(this.store.markdown, this.selectedFormat, {download: true},
-          (res) => {
-            let a = document.getElementById('dl-hidden-link')
-            let blob = new Blob([res])
-            a.href = window.URL.createObjectURL(blob)
-            a.download = this.store.files.selected.split('.')[0] + '.' + this.selectedFormat
-            a.click()
-            this.preparingDL = false
-          })
+        requestRender(this.store.markdown, this.selectedFormat, {download: true}, (res) => {
+          let a = document.getElementById('dl-hidden-link')
+          let blob = new Blob([res])
+          a.href = window.URL.createObjectURL(blob)
+          a.download = this.store.files.selected.split('.')[0] + '.' + this.selectedFormat
+          a.click()
+          this.preparingDL = false
+        })
       },
-        update: function() {
-          updateCurrentRender()
-        },
-        updateManual: function() {
-          this.renderingSmoothed = true
-          this.store.rendering = true
-          updateCurrentRender()
-        },
-        renderPDF: function() {
-          this.pdfPages = []
-          let loadingTask = PDFJSMain.getDocument(this.pdfArray)
-          loadingTask.promise.then((pdf) => {
-            this.pdfNumPages = pdf.numPages
-            let tmpPages = []
-            for (let i = 0; i < pdf.numPages; i++) {
-              pdf.getPage(i+1).then((page) => {
-                tmpPages.push(page)
-                if (tmpPages.length == pdf.numPages)
-                  this.pdfPages = tmpPages
-              })
-            }
+      update: function() {
+        updateCurrentRender({}, () => {
+          this.$nextTick(() => {
+            MathJax.Hub.Queue(["resetEquationNumbers",MathJax.InputJax.TeX], ["Typeset",MathJax.Hub])
           })
-            .catch((err) => {
-              if (err.message != 'PDFDocument: Stream must have data') {
-                this.$emit('error', err.message)
-                console.log(err)
+        })
+      },
+      updateManual: function() {
+        this.renderingSmoothed = true
+        this.store.rendering = true
+        this.update()
+      },
+      renderPDF: function() {
+        let loadingTask = PDFJSMain.getDocument(this.pdfArray)
+        loadingTask.promise.then((pdf) => {
+          let tmpPages = []
+          for (let i = 0; i < pdf.numPages; i++) {
+            pdf.getPage(i+1).then((page) => {
+              tmpPages.push(page)
+              console.log(page)
+              if (tmpPages.length == pdf.numPages) {
+                this.pdfNumPages = pdf.numPages
+                this.pdfPages = tmpPages.sort((a, b) => a.pageIndex - b.pageIndex)
               }
             })
-        },
-        onScroll: function(e) {
-          let pageH = this.$refs.pdfContent.$el.children[0].offsetHeight
-          let contH = this.$refs.renderLayout.offsetHeight
-          this.pagination = Math.ceil((e.target.scrollTop + contH / 2) / pageH)
-        },
-        pdfPageChanged: function(i) {
-          this.$vuetify.goTo(this.$refs.pdfContent.$el.children[i-1].offsetTop,
-            { container: '#render-container', duration: 250 })
-        }
+          }
+        })
+          .catch((err) => {
+            if (err.message != 'PDFDocument: Stream must have data') {
+              this.$emit('error', err.message)
+              console.log(err)
+            }
+          })
+      },
+      onScroll: function(e) {
+	if (this.forcedScrolling)
+          return
+        let pageH = this.$refs.pdfContent.$el.children[0].offsetHeight
+        let contH = this.$refs.renderLayout.offsetHeight
+        this.pagination = Math.ceil((e.target.scrollTop + contH / 2) / pageH)
+      },
+      pdfPageChanged: function(i) {
+        this.forcedScrolling = true
+        this.$vuetify.goTo(this.$refs.pdfContent.$el.children[i-1].offsetTop,
+          { container: '#render-container', duration: 250 })
+        if (this.tmpTimeout)
+          clearTimeout(this.tmpTimeout)
+        this.tmpTimeout = setTimeout(() => { this.forcedScrolling = false }, 250)
+      },
     }
 }
 </script>
@@ -225,13 +252,14 @@ export default {
 }
 
 #page-select {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 #render-layout {
   position: relative; /* So the pdf page select aligns to the bottom */
+  overflow: hidden;
 }
 </style>
