@@ -3,9 +3,18 @@ CREATE TABLE users (
   creation_date TIMESTAMP WITH TIME ZONE,
   last_seen TIMESTAMP WITH TIME ZONE
 );
-
-CREATE TABLE logins (
+CREATE TABLE email_logins (
   id uuid PRIMARY KEY REFERENCES users(id),
-  username VARCHAR (60) UNIQUE NOT NULL,
-  password VARCHAR (60) NOT NULL
+  name VARCHAR (60),
+  email VARCHAR (60) UNIQUE NOT NULL,
+  password VARCHAR (60) NOT NULL,
+  creation_date TIMESTAMP WITH TIME ZONE
+);
+CREATE TABLE social_logins (
+  id uuid PRIMARY KEY REFERENCES users(id),
+  provider VARCHAR (20) NOT NULL,
+  sub VARCHAR (64) NOT NULL,
+  name VARCHAR (64),
+  creation_date TIMESTAMP WITH TIME ZONE,
+  UNIQUE(provider, sub)
 );

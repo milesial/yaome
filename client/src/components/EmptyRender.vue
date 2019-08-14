@@ -36,7 +36,6 @@ $circle-duration: 0.2s;
 $circle-grow-duration: 0.3s;
 $circle-size: 400px;
 
-
 .abs-center {
   position: absolute;
   left: 50%;
@@ -155,6 +154,10 @@ $circle-size: 400px;
 
 #layout-main:hover #bottom-text-1 {
   opacity: 0;
+}
+
+#main-text {
+  white-space: nowrap;
 }
 </style>
 

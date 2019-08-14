@@ -13,7 +13,7 @@ module.exports = {
       .then(hash => createLoginEntry(userId, username, hash))
   },
   deleteUser: function(userId) {
-    return deleteLoginEntry(userId)
+      return deleteLoginEntry(userId) //TODO revoke oauth
       .then(() => deleteUserEntry(userId))
       .then(() => deleteUserDirectory(userId))
   }
@@ -37,8 +37,12 @@ function createUserDirectory(userId) {
   })
 }
 
-function createLoginEntry(userId, username, hash) {
-  return db.query('INSERT INTO logins VALUES($1, $2, $3)', [userId, username, hash])
+function createEmailLoginEntry(userId, username, hash) {
+  return db.query('INSERT INTO email_logins VALUES($1, $2, $3)', [userId, username, hash, new Date()])
+}
+
+function createProviderLoginEntry(userId, provider_id, name, provider) {
+  return db.query('INSERT INTO social_logins VALUES($1, $2, $3, $4, $5)', [userId, provider, provider_id, name, new Date()])
 }
 
 function deleteUserDirectory(userId) {
@@ -46,7 +50,10 @@ function deleteUserDirectory(userId) {
 }
 
 function deleteLoginEntry(userId) {
-  return db.query('DELETE FROM logins WHERE id = $1', [userId])
+    return Promise.all([
+        db.query('DELETE FROM email_logins WHERE id = $1', [userId]),
+        db.query('DELETE FROM social_logins WHERE id = $1', [userId])
+    ])
 }
 
 function deleteUserEntry(userId) {

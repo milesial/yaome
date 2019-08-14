@@ -2,65 +2,58 @@ const express = require('express')
 const sessions = require('client-sessions')
 const { exec } = require('child_process')
 const options = require('./options')
+const crypto = require('crypto')
+const request = require('request')
 const { initUser, registerUser, deleteUser } = require('./user-utils.js')
 const { getFileHierarchy, createFile, createDirectory, deleteFileOrDir } = require('./files.js')
+const oauth = require('./login/oauth.js')
+const login = require('./login/login.js')
 
-const app = express()
+let router = express.Router()
 
-app.disable('x-powered-by')
-// TODO: link with vuecli serve ?
-// app.use(express.static('.'))
-
-app.use(sessions({
+router.use(sessions({
   cookieName: 'session',
   secret: options.secret,
   duration: 7 * 24 * 60 * 60 * 1000,
   activeDuration: 1000 * 60 * 5
 }))
 
-app.use((req, res, next) => {
-  // TODO: do not accept all
-  res.set('Access-Control-Allow-Origin', '*')
-  res.set('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept')
-  res.set('Access-Control-Allow-Methods', 'POST, GET')
-  next()
-})
-
 // creation of a new user (visitor) if needed
-app.use((req, res, next) => {
+router.use((req, res, next) => {
   if (req.session.id) {
     res.set('X-Seen-You', 'true')
     return next()
   } 
   res.set('X-Seen-You', 'false')
   initUser()
-    .then((id) => {
+    .then(id => {
       console.log('Created new user', id)
       req.session.id = id
+      next()
     })
-    .catch(next)
-    .then(() => next())
-});
+})
 
 // creation of a login linked to the user
-app.post('/user', express.urlencoded({ extended: false }), function(req, res, next) {
+router.post('/user', express.urlencoded({ extended: false }), function(req, res, next) {
   registerUser(req.session.id, req.body.username, req.body.password)
-    .then(() => console.log('Registered user', req.body.username))
-    .catch(next)
-    .then(() => next())
+    .then(() => {
+      console.log('Registered user', req.body.username)
+      next()
+    })
 })
 
 // removal of the user + login
-app.delete('/user', function(req, res, next) {
+router.delete('/user', function(req, res, next) {
   deleteUser(req.session.id)
-    .then(() => console.log('Deleted user', req.session.id))
-    .catch(next)
-  delete req.session.id
-  next()
+    .then(() => {
+      console.log('Deleted user', req.session.id)
+      delete req.session.id
+      next()
+    })
 })
 
 // checks on the render format requested
-app.use('/render/:output', (req, res, next) => {
+router.use('/render/:output', (req, res, next) => {
   let format = req.params.output
   if (!['html', 'pdf'].includes(format))
     return next(`Unknown output format: ${format}`)
@@ -69,7 +62,7 @@ app.use('/render/:output', (req, res, next) => {
 })
 
 // actual rendering using pandoc
-app.post('/render/:output', express.json(), (req, res, next) => {
+router.post('/render/:output', express.json(), (req, res, next) => {
   let format = req.params.output
   let md = req.body.markdown
 
@@ -81,7 +74,7 @@ app.post('/render/:output', express.json(), (req, res, next) => {
 
   let suffix = ''
   if (format == 'pdf')
-    suffix = `-t latex -o ./render/${req.session.id}.pdf`
+    suffix = `-t latex -o ./server/render/${req.session.id}.pdf`
   else if (format == 'html')
     suffix = '-t html'
 
@@ -89,14 +82,14 @@ app.post('/render/:output', express.json(), (req, res, next) => {
     if (err)
       next(err)
     else if (format == 'pdf')
-      res.sendFile(`${req.session.id}.pdf`, { root: './render/' })
+      res.sendFile(`${req.session.id}.pdf`, { root: './server/render/' })
     else if (format == 'html')
       res.set('content-type', 'text/html').send(stdout)
   })
 })
 
 // get the user's files in a tree structure (json)
-app.get('/files', (req, res, next) => {
+router.get('/files', (req, res, next) => {
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
   res.set('Pragma', 'no-cache')
   res.set('Expires', '0')
@@ -106,12 +99,12 @@ app.get('/files', (req, res, next) => {
 })
 
 // create a file or a directory
-app.post('/files', express.urlencoded({ extended: false }), (req, res, next) => {
+router.post('/files', express.urlencoded({ extended: false }), (req, res, next) => {
   if (!req.body.name || !req.body.type)
-    next('Need a name and a type')
+    return next('Need a name and a type')
 
   if (!['directory', 'file'].contains(req.body.type))
-    next('Type must be a file or a directory')
+    return next('Type must be a file or a directory')
 
   let path = req.body.name.replace('../', '')
   if (req.body.type == 'file') {
@@ -126,7 +119,7 @@ app.post('/files', express.urlencoded({ extended: false }), (req, res, next) => 
 })
 
 // delete a file or a directory
-app.delete('/files', express.urlencoded({ extended: false }), (req, res, next) => {
+router.delete('/files', express.urlencoded({ extended: false }), (req, res, next) => {
   if (!req.body.name)
     next('Need a name')
 
@@ -136,4 +129,25 @@ app.delete('/files', express.urlencoded({ extended: false }), (req, res, next) =
     .then(() => res.end())
 })
 
-app.listen(options.port, () => console.log(`App listening on port ${options.port}`))
+// oauth callback
+router.get('/oauth', oauth)
+router.post('/login', login)
+
+// error handling
+router.use((err, req, res, next) => {
+  console.log(err)
+  next(err)
+})
+
+router.use((err, req, res, next) => {
+  if (req.xhr)
+    res.status(500).send({ error: err.toString() })
+  else
+    next(err)
+})
+
+router.use((err, req, res, next) => {
+  res.status(500).json({ error: err.toString() })
+})
+
+module.exports = router

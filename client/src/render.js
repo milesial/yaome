@@ -19,7 +19,7 @@ export function requestRender(markdown, format, options={}, callback=()=>{}) {
     }
   }
 
-  xhttp.open("POST", `http://localhost/render/${format}`, true);
+  xhttp.open("POST", `/render/${format}`, true);
   xhttp.setRequestHeader("Content-type", "application/json");
   options.file = 'main.md'
   options.markdown = markdown

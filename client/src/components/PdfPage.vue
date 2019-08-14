@@ -1,9 +1,9 @@
 <template>
-  <div    ref="container"
+  <div ref="container"
     class="container pa-0 ma-0"    v-resize="clearTextLayer"    v-resize:debounce="renderTextLayer"
   >
     <div class="textLayer" ref="textLayer"></div>
-    <canvas ref="canvas"></canvas>
+    <canvas class="elevation-2" ref="canvas"></canvas>
   </div>
 </template>
 
@@ -34,6 +34,10 @@ export default {
       .then(() => {
         this.renderTextLayer()
       })
+      .catch(console.log)
+      .finally(() => {
+        this.$emit('ready')
+      })
   },
   methods: {
     renderTextLayer: function() {
@@ -45,9 +49,10 @@ export default {
       let scale = desiredWidth / v.width
       let viewport = page.getViewport({ scale: scale })
       this.page.getTextContent()
-        .then(function(textContent) {
+        .then((textContent) => {
           let textLayer = new PDFJSViewer.TextLayerBuilder({
-            textLayerDiv: textDiv,            pageIndex: page.pageIndex,
+            textLayerDiv: textDiv,
+            pageIndex: page.pageIndex,
             viewport: viewport
           })
           textLayer.setTextContent(textContent)
@@ -65,10 +70,15 @@ export default {
 
 <style>
 canvas {
-  border: 1px solid red;
   width: 100% !important;
   height: 100% !important;
+  box-sizing: border-box;
 }
+
+canvas:hover {
+  border: 5px solid red;
+}
+
 .container {
   width:100%;
   height: 100%;

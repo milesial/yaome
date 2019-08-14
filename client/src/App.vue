@@ -1,8 +1,10 @@
 <template>
   <v-app>
+    <AppBar @success="showSuccessSnackbar"/>
     <v-content>
       <v-container grid-list-md fill-height>
         <v-layout
+          v-resize="onResize"
           text-center>
           <v-flex class="flex-panel pr-0" ref="leftpanel">
             <v-card class="panel"><EditPanel/></v-card>
@@ -33,14 +35,18 @@
 </template>
 
 <script>
+  import AppBar from './components/AppBar'
 import RenderPanel from './components/RenderPanel'
 import EditPanel from './components/EditPanel'
+import Login from './components/Login'
 
 export default {
   name: 'App',
   components: {
     RenderPanel,
-    EditPanel
+    EditPanel,
+    Login,
+    AppBar
   },
   data: () => ({
     snackbar: {
@@ -52,14 +58,22 @@ export default {
   mounted: function() {
     makeResizableDiv(this.$refs.rightpanel, this.$refs.resizer)
     // fix for the pdf generation without any resizes first
-    this.$refs.rightpanel.style.width = this.$refs.rightpanel.parentElement.offsetWidth / 2 + 'px'
-    this.$refs.rightpanel.style.flexGrow = 0
+    this.onResize()
   },
   methods: {
     showErrorSnackbar: function(text) {
       this.snackbar.text = text
       this.snackbar.color = 'error'
       this.snackbar.show = true
+    },
+    showSuccessSnackbar: function(text) {
+      this.snackbar.text = text
+      this.snackbar.color = 'success'
+      this.snackbar.show = true
+    },
+    onResize: function() {
+      this.$refs.rightpanel.style.width = this.$refs.rightpanel.parentElement.offsetWidth / 2 + 'px'
+      this.$refs.rightpanel.style.flexGrow = 0
     }
   }
 }

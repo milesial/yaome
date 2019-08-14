@@ -23,21 +23,11 @@
 
 <script>
 import store from '../store.js';
-import { updateCurrentRender } from '../render.js'
-import _ from 'lodash'
 
 export default {
   data: () => ({
     store: store
   }),
-  watch: {
-    'store.markdown': function(){
-      this.render()  
-    }
-  },
-  methods: {
-    render: _.debounce(updateCurrentRender, 200),
-  }
 }
 </script>
 

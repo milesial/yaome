@@ -1,3 +1,3 @@
 const fs = require('fs')
-const configPath = './config.json'
+const configPath = './server/config.json'
 module.exports = JSON.parse(fs.readFileSync(configPath, 'UTF-8'))
