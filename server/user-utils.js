@@ -8,9 +8,9 @@ module.exports = {
     return createUserEntry()
       .then(id => createUserDirectory(id))
   },
-  registerUser: function(userId, username, password) {
+  registerUser: function(userId, email, password) {
     return bcrypt.hash(password, 10)
-      .then(hash => createLoginEntry(userId, username, hash))
+      .then(hash => createEmailLoginEntry(userId, email, hash))
   },
   deleteUser: function(userId) {
       return deleteLoginEntry(userId) //TODO revoke oauth
@@ -37,8 +37,8 @@ function createUserDirectory(userId) {
   })
 }
 
-function createEmailLoginEntry(userId, username, hash) {
-  return db.query('INSERT INTO email_logins VALUES($1, $2, $3)', [userId, username, hash, new Date()])
+function createEmailLoginEntry(userId, email, hash) {
+  return db.query('INSERT INTO email_logins VALUES($1, $2, $3, $4)', [userId, email, hash, new Date()])
 }
 
 function createProviderLoginEntry(userId, provider_id, name, provider) {

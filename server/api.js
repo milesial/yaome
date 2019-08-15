@@ -6,8 +6,10 @@ const crypto = require('crypto')
 const request = require('request')
 const { initUser, registerUser, deleteUser } = require('./user-utils.js')
 const { getFileHierarchy, createFile, createDirectory, deleteFileOrDir } = require('./files.js')
-const oauth = require('./login/oauth.js')
-const login = require('./login/login.js')
+const oauth = require('./auth/oauth.js')
+const login = require('./auth/login.js')
+const register = require('./auth/register.js')
+const logout = require('./auth/logout.js')
 
 let router = express.Router()
 
@@ -132,6 +134,8 @@ router.delete('/files', express.urlencoded({ extended: false }), (req, res, next
 // oauth callback
 router.get('/oauth', oauth)
 router.post('/login', login)
+router.post('/register', register)
+router.get('/logout', logout)
 
 // error handling
 router.use((err, req, res, next) => {

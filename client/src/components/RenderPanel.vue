@@ -103,7 +103,7 @@
 
 <script>
 import store from '../store.js';
-import { requestRender, updateCurrentRender } from '../render.js'
+import { requestRender, updateCurrentRender } from '../utils.js'
 import PdfPage from './PdfPage.vue'
 import EmptyRender from './EmptyRender.vue'
 import * as PDFJSMain from "pdfjs-dist/build/pdf"

@@ -24,6 +24,7 @@
       </v-btn>
       <v-divider vertical dark></v-divider>
       <v-dialog
+        v-if="!store.logged"
         v-model="loginDialog"
         max-width="600px"
         scrollable
@@ -39,6 +40,7 @@
             right
             rounded
           >
+          <v-icon dark class="mr-2">mdi-login</v-icon>
             Sign in
           </v-btn>
         </template>
@@ -48,17 +50,32 @@
           @login="onLogin"
         />
       </v-dialog>
+      <v-btn
+          v-if="store.logged"
+          class="ml-4"
+          id="logout"
+          href="/logout"
+          large
+          right
+          text
+          rounded
+      >
+          <v-icon dark class="mr-2">mdi-logout</v-icon>
+          Sign out
+      </v-btn>
     </v-app-bar>
   </div>
 </template>
 
 
 <script>
+import store from '../store.js'
 import Login from './Login'
 
 export default {
   components: { Login },
   data: () => ({
+    store,
     collapsed: false,
     loginDialog: false
   }),

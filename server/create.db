@@ -5,7 +5,6 @@ CREATE TABLE users (
 );
 CREATE TABLE email_logins (
   id uuid PRIMARY KEY REFERENCES users(id),
-  name VARCHAR (60),
   email VARCHAR (60) UNIQUE NOT NULL,
   password VARCHAR (60) NOT NULL,
   creation_date TIMESTAMP WITH TIME ZONE

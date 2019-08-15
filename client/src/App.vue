@@ -16,7 +16,8 @@
           <v-snackbar
             v-model="snackbar.show"
             bottom
-            :timeout="5000"
+            class="pb-5 subtitle-1 font-weight-medium"
+            :timeout="6000"
             :color="snackbar.color"
           >
             {{ snackbar.text }}
@@ -35,17 +36,16 @@
 </template>
 
 <script>
-  import AppBar from './components/AppBar'
+import AppBar from './components/AppBar'
 import RenderPanel from './components/RenderPanel'
 import EditPanel from './components/EditPanel'
-import Login from './components/Login'
+import store from './store.js'
 
 export default {
   name: 'App',
   components: {
     RenderPanel,
     EditPanel,
-    Login,
     AppBar
   },
   data: () => ({
@@ -59,6 +59,12 @@ export default {
     makeResizableDiv(this.$refs.rightpanel, this.$refs.resizer)
     // fix for the pdf generation without any resizes first
     this.onResize()
+    if (store.logged && store.name)
+      this.showSuccessSnackbar(`Welcome ${store.name} !`)
+    else if (store.logged)
+      this.showSuccessSnackbar(`Welcome !`)
+    else
+      this.showPrimarySnackbar('Remember to sign in to save your work.')
   },
   methods: {
     showErrorSnackbar: function(text) {
@@ -69,6 +75,11 @@ export default {
     showSuccessSnackbar: function(text) {
       this.snackbar.text = text
       this.snackbar.color = 'success'
+      this.snackbar.show = true
+    },
+    showPrimarySnackbar: function(text) {
+      this.snackbar.text = text
+      this.snackbar.color = 'primary darken-1'
       this.snackbar.show = true
     },
     onResize: function() {

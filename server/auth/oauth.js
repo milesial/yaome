@@ -69,8 +69,10 @@ function getOAuthToken(code, state, provider) {
 function checkOAuth(req, res, next) {
   if (!req.oauth)
     return next()
-  console.log(req.oauth)
-  res.redirect(req.originalUrl.split("?").shift() );
+  
+  res.cookie('logged', 'true')
+  res.cookie('name', req.oauth.name)
+    res.redirect('http://localhost:8080');
 }
 
 async function OAuthRedirect(req, res, next) {
