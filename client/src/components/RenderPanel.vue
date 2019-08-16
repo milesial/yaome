@@ -7,9 +7,15 @@
     column
     fill-height
   >
-    <v-flex shrink>
+    <v-flex shrink class="py-0">
       <v-toolbar flat dense>
-        <v-toolbar-title>Render</v-toolbar-title>
+        <v-toolbar-title class="mx-n4">
+              <v-list-item-avatar large class="ml-2 secondary">
+                <v-icon v-if="!store.rendering" dark>mdi-hexagon-slice-6</v-icon>
+                <v-icon v-else dark>mdi-hexagon-outline</v-icon>
+              </v-list-item-avatar>
+        </v-toolbar-title>
+
         <v-spacer></v-spacer>
         <!-- download button -->
         <v-tooltip bottom>

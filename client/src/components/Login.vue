@@ -18,56 +18,7 @@
         <v-card-text class="pb-0">
           <v-container grid-list-md>
             <v-layout wrap column class="pt-2">
-              <!-- Social logins -->
-              <v-btn 
-                href="/oauth?provider=github"
-                @click="loadingProvider.github = true"
-                :loading="loadingProvider.github"
-                class="my-1 provider-btn no-uppercase title"
-                outlined
-                block
-                x-large
-                dark
-                rounded
-                color="#161614"
-              >Github<img height="36" width="36" class="v-icon notranslate provider-logo" src="@/assets/github.svg"/></v-btn>
-              <v-btn 
-                href="/oauth?provider=google"
-                @click="loadingProvider.google = true"
-                :loading="loadingProvider.google"
-                class="my-1 provider-btn no-uppercase title"
-                outlined
-                block
-                x-large
-                dark
-                rounded
-                color="#757575"
-              >Google<img height="36" width="36" class="v-icon notranslate provider-logo" src="@/assets/google.svg"/></v-btn>
-              <v-btn 
-                href="/oauth?provider=facebook"
-                @click="loadingProvider.facebook = true"
-                :loading="loadingProvider.facebook"
-                class="my-1 provider-btn no-uppercase title"
-                outlined
-                block
-                x-large
-                dark
-                rounded
-                color="#3c5a99"
-              >Facebook<img height="36" width="36" class="v-icon notranslate provider-logo" src="@/assets/facebook.svg"/></v-btn>
-              <v-btn 
-                href="/oauth?provider=gitlab"
-                @click="loadingProvider.gitlab = true"
-                :loading="loadingProvider.gitlab"
-                class="my-1 provider-btn no-uppercase title"
-                outlined
-                block
-                x-large
-                dark
-                rounded
-                color="#E24329"
-              >Gitlab<img height="36" width="36" class="v-icon notranslate provider-logo" src="@/assets/gitlab.svg"/></v-btn>
-
+              <LoginSocial/>
               <!-- middle divider -->
               <v-row align="center" class="mt-10 mb-4">
                 <v-divider></v-divider>
@@ -87,8 +38,9 @@
                   :rules="emailRules"
                   :error="error.show"
                   :disabled="loading"
+                  validate-on-blur
                   @keydown.enter="submit"
-                  @input="error.show = false"
+                  @input="error.show = false;$refs.loginForm.validate()"
                   required />
                 <v-text-field 
                   class="form-input"
@@ -102,7 +54,7 @@
                   :error="error.show"
                   :disabled="loading"
                   @keydown.enter="submit"
-                  @input="error.show = false"
+                  @input="error.show = false;$refs.loginForm.validate()"
                   required />
                 <!-- TODO: send mail etc -->
                 <div 
@@ -139,8 +91,10 @@
                   :rules="emailRules"
                   :error="error.show"
                   :disabled="loading"
+                  validate-on-blur
                   @keydown.enter="submit"
-                  @input="error.show = false"
+                  @input="error.show = false;$refs.registerForm.validate()"
+                  hint="We won't share your email with anyone"
                   required />
                 <v-text-field 
                   class="form-input"
@@ -154,7 +108,7 @@
                   :error="error.show"
                   :disabled="loading"
                   @keydown.enter="submit"
-                  @input="error.show = false"
+                  @input="error.show = false;$refs.registerForm.validate()"
                   hint="At least 8 characters"
                   persistent-hint
                   counter
@@ -196,7 +150,7 @@
         rounded
         :disabled="!formValid"
         :loading="loading"
-        color="primary darken-1"
+        color="primary"
         @click="submit"
         type="submit"
       >
@@ -208,20 +162,16 @@
 
 <script>
 import store from '../store.js'
+import LoginSocial from './LoginSocial'
 export default {
   props: ['opened'],
+  components: { LoginSocial },
   data: function() {
     return {
       showPass: false,
       email: '',
       pass: '',
       loading: false,
-      loadingProvider: {
-        github: false,
-        google: false,
-        facebook: false,
-        gitlab: false
-      },
       loginFormValid: false,
       registerFormValid: false,
       error: {
@@ -309,32 +259,6 @@ export default {
 </script>
 
 <style scoped>
-.provider-logo {
-  position: absolute;
-  right: 0;
-}
-
-.no-uppercase {
-  text-transform: none;
-}
-
-.provider-btn {
-  position: relative;
-  min-width: 300px;
-}
-
-@media screen and (min-width: 400px) {
-  .provider-btn > :first-child::before {
-    content: 'Sign in with ';
-    white-space: pre;
-  }
-}
-
-@media screen and (max-width: 280px) {
-  .provider-btn > :first-child > img {
-    display: none;
-  }
-}
 
 #signin-toolbar {
   flex-grow: 0;
@@ -358,10 +282,14 @@ export default {
 }
 
 .form-input {
-  min-height: 65px; /* so the validation messages don't shift the form */
+  min-height: 75px; /* so the validation messages don't shift the form */
 }
 
 #window {
   overflow-y: auto;
+}
+
+.no-uppercase {
+  text-transform: none;
 }
 </style>

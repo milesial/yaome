@@ -1,10 +1,36 @@
 <template>
   <v-app>
-    <AppBar @success="showSuccessSnackbar"/>
+    <AppBar
+      @success="showSuccessSnackbar"
+      @centerPanels="centerPanels"
+      @maxEdit="maximizeEdit"
+      @maxRender="maximizeRender"
+      @drawer="drawer = !drawer"
+    />
+    <v-navigation-drawer class="pt-5" app absolute persistent clipped v-model="drawer">
+      <v-list-item dense style="height:48px">
+        <v-list-item-avatar large class="secondary">
+          <v-icon dark>folder</v-icon>
+        </v-list-item-avatar>
+        <v-list-item-content>
+          <v-list-item-title class="title">
+            Files
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+      <v-list-item nav>
+        <v-list-item-content>
+        d
+      </v-list-item-content>
+      </v-list-item>
+
+    </v-navigation-drawer>
     <v-content>
-      <v-container grid-list-md fill-height>
+      <v-container grid-list-md fill-height style="max-width:100%;">
         <v-layout
-          v-resize="onResize"
+          v-resize="centerPanels"
           text-center>
           <v-flex class="flex-panel pr-0" ref="leftpanel">
             <v-card class="panel"><EditPanel/></v-card>
@@ -53,12 +79,18 @@ export default {
       show: false,
       text: '',
       color: '',
-    }
+    },
+    drawer: false
   }),
+  computed: {
+    isWrapped: function() {
+      return this.$refs.rightpanel.offsetTop != this.$refs.leftpanel.offsetTop
+    }
+  },
   mounted: function() {
     makeResizableDiv(this.$refs.rightpanel, this.$refs.resizer)
     // fix for the pdf generation without any resizes first
-    this.onResize()
+    this.centerPanels()
     if (store.logged && store.name)
       this.showSuccessSnackbar(`Welcome ${store.name} !`)
     else if (store.logged)
@@ -82,9 +114,34 @@ export default {
       this.snackbar.color = 'primary darken-1'
       this.snackbar.show = true
     },
-    onResize: function() {
-      this.$refs.rightpanel.style.width = this.$refs.rightpanel.parentElement.offsetWidth / 2 + 'px'
+    centerPanels: function() {
+      if (this.isWrapped) {
+        this.$refs.rightpanel.style.width = '100%'
+        return
+      }
+
+      this.$refs.rightpanel.style.transition = "width 0.2s ease-in-out"
+      this.$refs.rightpanel.style.width = this.$refs.rightpanel.parentElement.offsetWidth / 2 - this.$refs.resizer.getBoundingClientRect().width / 2 + 'px'
       this.$refs.rightpanel.style.flexGrow = 0
+      setTimeout(() => {
+        this.$refs.rightpanel.style.transition = ""
+      }, 200)
+    },
+    maximizeEdit: function() {
+      this.$refs.rightpanel.style.transition = "width 0.2s ease-in-out"
+      this.$refs.rightpanel.style.width = '0%'
+      this.$refs.rightpanel.style.flexGrow = 0
+      setTimeout(() => {
+        this.$refs.rightpanel.style.transition = ""
+      }, 200)
+    },
+    maximizeRender: function() {
+      this.$refs.rightpanel.style.transition = "width 0.2s ease-in-out"
+      this.$refs.rightpanel.style.width = '100%'
+      this.$refs.rightpanel.style.flexGrow = 0
+      setTimeout(() => {
+        this.$refs.rightpanel.style.transition = ""
+      }, 200)
     }
   }
 }
@@ -92,6 +149,7 @@ export default {
 function makeResizableDiv(divright, resizer) {
   resizer.addEventListener('mousedown', function(e) {
     e.preventDefault()
+    divright.style.transition = ""
     window.addEventListener('mousemove', resize)
     window.addEventListener('mouseup', stopResize)
   })
@@ -116,16 +174,17 @@ function makeResizableDiv(divright, resizer) {
 #resizer {
   cursor: col-resize;
   width: 15px;
-  padding: 0;
+  padding: 10px 0 10px 0;
   flex: 0 0 auto;
 }
 
 #resizer::before {
   content: '';
   display: block;
-  width: 5px;
+  width: 2px;
   height: 100%;
   margin: 0 auto;
+  background-color: var(--v-primary-base);
 }
 
 .flex-panel {

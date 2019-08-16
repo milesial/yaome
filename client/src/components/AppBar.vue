@@ -1,17 +1,59 @@
 <template>
   <div>
     <v-app-bar
-      :collapse="collapsed"
+      app
       color="primary darken-2"
       dark
+      clipped-left
       short
       class="pr-0"
     >
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="$emit('drawer')"></v-app-bar-nav-icon>
       <v-toolbar-title>Yaome</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <div class="d-none d-sm-flex" style="position:absolute;left:50%;transform:translateX(-50%);">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              icon
+              @click="$emit('maxEdit')"
+            >
+              <v-icon large>mdi-arrow-collapse-right</v-icon>
+            </v-btn>
+          </template>
+          <span>Maximize edit panel</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              icon
+              @click="$emit('centerPanels')"
+            >
+              <!-- <v-icon large>mdi-format-horizontal-align-center</v-icon> -->
+              <v-icon large>mdi-drag-vertical</v-icon>
+            </v-btn>
+          </template>
+          <span>Make panels even</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              icon
+              @click="$emit('maxRender')"
+            >
+              <v-icon large>mdi-arrow-collapse-left</v-icon>
+            </v-btn>
+          </template>
+          <span>Maximize render panel</span>
+        </v-tooltip>
+      </div>
       <v-spacer></v-spacer>
 
       <v-btn
+        class="d-none d-md-flex"
         id="star-github"
         rounded
         text
@@ -40,7 +82,7 @@
             right
             rounded
           >
-          <v-icon dark class="mr-2">mdi-login</v-icon>
+            <v-icon dark class="mr-2">mdi-login</v-icon>
             Sign in
           </v-btn>
         </template>
@@ -51,17 +93,17 @@
         />
       </v-dialog>
       <v-btn
-          v-if="store.logged"
-          class="ml-4"
-          id="logout"
-          href="/logout"
-          large
-          right
-          text
-          rounded
+        v-if="store.logged"
+        class="ml-4"
+        id="logout"
+        href="/logout"
+        large
+        right
+        text
+        rounded
       >
-          <v-icon dark class="mr-2">mdi-logout</v-icon>
-          Sign out
+        <v-icon dark class="mr-2">mdi-logout</v-icon>
+        Sign out
       </v-btn>
     </v-app-bar>
   </div>
@@ -76,7 +118,6 @@ export default {
   components: { Login },
   data: () => ({
     store,
-    collapsed: false,
     loginDialog: false
   }),
   methods: {
@@ -90,12 +131,6 @@ export default {
 <style scoped>
 #signin {
   box-sizing: border-box;
-}
-
-@media screen and (max-width: 500px) {
-  #star-github {
-    display: none;
-  }
 }
 
 </style>

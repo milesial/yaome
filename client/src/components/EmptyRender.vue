@@ -15,7 +15,7 @@
       justify-center
     >
       <div align-center id="top-container">
-        <div id="rotate" class="abs-center">
+        <div id="rotate" class="abs-center d-none d-md-flex">
           <div id="circle-clip" class="abs-center">
             <div id="circle" class="abs-center"></div>
           </div>

@@ -4,9 +4,28 @@
     fill-height
     class="ma-0"
   >
-    <v-flex shrink>
+    <v-flex shrink class="py-0">
       <v-toolbar flat dense>
-        <v-toolbar-title>Edit</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-toolbar-items>
+        <v-btn-toggle  v-model="textStyle" multiple>
+          <v-btn tile>
+            <v-icon>format_bold</v-icon>
+          </v-btn>
+          <v-btn tile>
+            <v-icon>format_italic</v-icon>
+          </v-btn>
+          <v-btn tile>
+            <v-icon>format_strikethrough</v-icon>
+          </v-btn>
+        </v-btn-toggle>
+      </v-toolbar-items>
+        <v-spacer></v-spacer>
+        <v-toolbar-title class="mx-n4">
+          <v-list-item-avatar class="mr-2 secondary">
+            <v-icon dark>mdi-pencil</v-icon>
+          </v-list-item-avatar>
+        </v-toolbar-title>
       </v-toolbar>
       <v-divider></v-divider>
     </v-flex>
@@ -26,7 +45,8 @@ import store from '../store.js';
 
 export default {
   data: () => ({
-    store: store
+    store: store,
+    textStyle: []
   }),
 }
 </script>
