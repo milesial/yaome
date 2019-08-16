@@ -8,14 +8,14 @@
       <v-toolbar flat dense>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-        <v-btn-toggle  v-model="textStyle" multiple>
-          <v-btn tile>
+        <v-btn-toggle v-model="textStyle">
+          <v-btn tile @click="bold">
             <v-icon>format_bold</v-icon>
           </v-btn>
-          <v-btn tile>
+          <v-btn tile @click="italic">
             <v-icon>format_italic</v-icon>
           </v-btn>
-          <v-btn tile>
+          <v-btn tile @click="strike">
             <v-icon>format_strikethrough</v-icon>
           </v-btn>
         </v-btn-toggle>
@@ -33,6 +33,7 @@
       <v-textarea
         v-model="store.markdown"
         autofocus
+        ref="textarea"
         flat
         no-resize
       />
@@ -46,8 +47,37 @@ import store from '../store.js';
 export default {
   data: () => ({
     store: store,
-    textStyle: []
+    textStyle: undefined
   }),
+  methods: {
+    bold() {
+      this.insertAroundCursor('**')
+    },
+    italic() {
+      this.insertAroundCursor('_')
+      this.textStyle = undefined
+    },
+    strike() {
+      this.insertAroundCursor('~~')
+      this.textStyle = undefined
+    },
+    insertAroundCursor(text) {
+      // get the real textarea element
+      // TODO write test
+      let el = this.$refs.textarea.$el.firstChild.firstChild.firstChild.firstChild
+      const start = el.selectionStart
+      const end = el.selectionEnd
+      const md = this.store.markdown
+      this.store.markdown = md.substring(0, start) + text + md.substring(start, end) + text + md.substring(end)
+      // move cursor back where it was
+      // nextTick because data update mess
+      this.$nextTick(() => {
+        el.focus()
+        el.setSelectionRange(start + text.length, end + text.length)
+        this.textStyle = undefined
+      })
+    }
+  }
 }
 </script>
 
