@@ -8,10 +8,12 @@
       short
       class="pr-0"
     >
-      <v-app-bar-nav-icon @click="$emit('drawer')"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="$emit('drawer')">
+        <v-icon>mdi-chart-donut</v-icon>
+      </v-app-bar-nav-icon>
       <v-toolbar-title>Yaome</v-toolbar-title>
       <v-spacer></v-spacer>
-      <div class="d-none d-sm-flex" style="position:absolute;left:50%;transform:translateX(-50%);">
+      <div class="d-none d-sm-flex" style="position:absolute;left:50%;transform:translateX(-50%);padding-left:80px;">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn

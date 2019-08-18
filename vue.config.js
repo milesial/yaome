@@ -20,6 +20,9 @@ module.exports = {
       alias: {
         "@": path.resolve(__dirname, 'client/src/')
       }
+    },
+    externals: {
+      "mathjax": "MathJax"
     }
   }
 }
