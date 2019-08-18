@@ -1,6 +1,9 @@
 <template>
-  <div ref="container"
-    class="container pa-0 ma-0"    v-resize="clearTextLayer"    v-resize:debounce="renderTextLayer"
+  <div
+    ref="container"
+    class="container pa-0 ma-0"
+    v-resize="clearTextLayer"
+    v-resize:debounce="renderTextLayer"
   >
     <div class="textLayer" ref="textLayer"></div>
     <canvas class="elevation-2" ref="canvas"></canvas>
@@ -8,17 +11,17 @@
 </template>
 
 <script>
-import * as PDFJSViewer from "pdfjs-dist/web/pdf_viewer.js"
+import * as PDFJSViewer from 'pdfjs-dist/web/pdf_viewer.js'
 import 'pdfjs-dist/web/pdf_viewer.css'
 import resize from 'vue-resize-directive'
+import EventBus from '../event-bus.js'
 
 export default {
-  directives: {
-    resize
-  },
+  directives: { resize },
   props: ['page'],
-  mounted: function() {
+  mounted() {
     let page = this.page
+    // scale 2 for higher quality
     let viewport = page.getViewport({ scale: 2 });
     let canvas = this.$refs.canvas
     let context = canvas.getContext('2d')
@@ -34,13 +37,10 @@ export default {
       .then(() => {
         this.renderTextLayer()
       })
-      .catch(console.log)
-      .finally(() => {
-        this.$emit('ready')
-      })
+      .catch(err => EventBus.$emit('error', err))
   },
   methods: {
-    renderTextLayer: function() {
+    renderTextLayer() {
       let textDiv = this.$refs.textLayer
       let page = this.page
 
@@ -58,17 +58,18 @@ export default {
           textLayer.setTextContent(textContent)
           textLayer.render()
         })
+        .catch(err => EventBus.$emit('error', err))
     },
     // TODO: keep selection ?
     clearTextLayer() {
-      this.$refs.textLayer.innerHTML = ""
+      this.$refs.textLayer.innerHTML = ''
     }
   }
 }
 
 </script>
 
-<style>
+<style scoped>
 canvas {
   width: 100% !important;
   height: 100% !important;

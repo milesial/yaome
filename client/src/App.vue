@@ -5,12 +5,23 @@
       @centerPanels="centerPanels"
       @maxEdit="maximizeEdit"
       @maxRender="maximizeRender"
-      @drawer="drawer = !drawer"
+      @drawer="miniDrawer = !miniDrawer"
     />
-    <v-navigation-drawer class="pt-5" app absolute persistent clipped v-model="drawer">
-      <v-list-item dense style="height:48px">
-        <v-list-item-avatar large class="secondary">
-          <v-icon dark>folder</v-icon>
+    <div>
+    <v-navigation-drawer
+      class="pt-4"
+      :class="{'elevation-10': !miniDrawer}"
+      app
+      absolute
+      persistent
+      clipped
+      expand-on-hover
+      v-model="drawer"
+      :mini-variant.sync="miniDrawer"
+    >
+      <v-list-item  style="position:absolute;left:5px;height:48px;" dense>
+        <v-list-item-avatar large left class="secondary">
+          <v-icon dark>mdi-file-tree</v-icon>
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title class="title">
@@ -18,15 +29,15 @@
           </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      <v-divider class="mt-12"></v-divider>
 
-      <v-divider></v-divider>
       <v-list-item nav>
         <v-list-item-content>
-        d
+        
       </v-list-item-content>
-      </v-list-item>
-
-    </v-navigation-drawer>
+    </v-list-item>
+  </v-navigation-drawer>
+  </div>
     <v-content>
       <v-container grid-list-md fill-height style="max-width:100%;">
         <v-layout
@@ -37,7 +48,7 @@
           </v-flex>
           <div id="resizer" ref="resizer"></div>
           <v-flex class="flex-panel pl-0" ref="rightpanel">
-            <v-card class="panel"><RenderPanel @error="showErrorSnackbar"/></v-card>
+            <v-card class="panel"><RenderPanel/></v-card>
           </v-flex>
           <v-snackbar
             v-model="snackbar.show"
@@ -66,6 +77,7 @@ import AppBar from './components/AppBar'
 import RenderPanel from './components/RenderPanel'
 import EditPanel from './components/EditPanel'
 import store from './store.js'
+import EventBus from './event-bus.js'
 
 export default {
   name: 'App',
@@ -80,7 +92,8 @@ export default {
       text: '',
       color: '',
     },
-    drawer: false
+    drawer: true,
+    miniDrawer: false
   }),
   computed: {
     isWrapped: function() {
@@ -143,6 +156,12 @@ export default {
         this.$refs.rightpanel.style.transition = ""
       }, 200)
     }
+  },
+  created() {
+    EventBus.$on('error', this.showErrorSnackbar)
+  },
+  beforeDestroy() {
+    EventBus.$off('error', this.showErrorSnackbar)
   }
 }
 
@@ -169,6 +188,7 @@ function makeResizableDiv(divright, resizer) {
 .panel {
   overflow-x: auto;
   height: 100%;
+  max-height:100%;
 }
 
 #resizer {
