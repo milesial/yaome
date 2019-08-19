@@ -5,9 +5,31 @@
     class="ma-0"
   >
     <v-flex id="editbox" class="ma-0 pa-0" ref="editbox">
-      <v-list-item-avatar id="pencil" large class="mt-1 mr-2 secondary">
+      <div id="editbar-right">
+        <v-menu
+          v-model="optionsMenu"
+          :close-on-content-click="false"
+          offset-x
+        >
+          <template v-slot:activator="{ on }">
+            <v-btn
+              text
+              large
+              rounded
+              v-on="on"
+            >
+              <v-icon class="mr-2">settings</v-icon>
+              Settings
+            </v-btn>
+          </template>
+          <EditPanelOptions @close="optionsMenu = false" :options="options" :easyMDE="easyMDE"/>
+        </v-menu>
+      <v-list-item-avatar large class="mt-1 mr-2 secondary">
         <v-icon dark>mdi-pencil</v-icon>
       </v-list-item-avatar>
+
+
+    </div>
       <textarea v-resize="onResize">
       </textarea>
       <!--v-textarea
@@ -22,19 +44,35 @@
 </template>
 
 <script>
+import 'codemirror/lib/codemirror.css'
 import store from '../store.js'
+import EditPanelOptions from './EditPanelOptions'
 import EasyMDE from 'easymde'
-import 'easymde/dist/easymde.min.css'
+import 'easymde/src/css/easymde.css'
 import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/edit/closebrackets.js'
 import 'codemirror/addon/edit/matchtags.js'
 import 'codemirror/addon/edit/closetag.js'
+import 'codemirror/addon/selection/active-line.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/addon/search/jump-to-line.js'
 
 export default {
+  components: { EditPanelOptions },
   data: () => ({
     store: store,
     textStyle: undefined,
-    easyMDE: null
+    easyMDE: null,
+    optionsMenu: false,
+    options: {
+      theme: 'easymde',
+      keymap: 'default',
+      showLines: true,
+      styleLine: true
+    },
+
   }),
   mounted() {
     this.easyMDE = new EasyMDE({
@@ -44,6 +82,7 @@ export default {
       autosave: {
         enabled: false,
       },
+      theme: 'easymde',
       hideIcons: ['preview', 'side-by-side'],
       minHeight: '600px',
       parsingConfig: {
@@ -116,9 +155,12 @@ export default {
     this.easyMDE.codemirror.setOption('autoCloseBrackets', true)
     this.easyMDE.codemirror.setOption('matchTags', true)
     this.easyMDE.codemirror.setOption("autoCloseTags", true)
+    this.easyMDE.codemirror.setOption("styleActiveLine", true)
     this.easyMDE.codemirror.on('change', () => {
       this.store.markdown = this.easyMDE.value()
     })
+
+    this.onResize()
   },
   methods: {
     onResize() {
@@ -134,18 +176,26 @@ export default {
 
 <style lang="scss">
 .CodeMirror {
-  height: auto;
   font-family: 'Open Sans';
   font-size: 18px;
 }
+.CodeMirror-dialog {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  left: 40px;
+  background-color: inherit;
+  display: flex;
+  z-index: 2;
+}
 
+.CodeMirror-sizer {
+  border-right: none;
+}
 .CodeMirror-linenumber {
   font-size: 16px;
 }
 
-#editbox .CodeMirror-matchingbracket {
-  color: var(--v-primary-darken1);
-}
 #editbox .editor-toolbar {
   border: none;
 }
@@ -172,8 +222,9 @@ export default {
   box-sizing: border-box;
 }
 
-#pencil {
+#editbar-right {
   position: absolute;
   right: 0;
+  z-index: 1;
 }
 </style>

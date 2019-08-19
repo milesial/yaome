@@ -7,37 +7,7 @@
       @maxRender="maximizeRender"
       @drawer="miniDrawer = !miniDrawer"
     />
-    <div>
-    <v-navigation-drawer
-      class="pt-4"
-      :class="{'elevation-10': !miniDrawer}"
-      app
-      absolute
-      persistent
-      clipped
-      expand-on-hover
-      v-model="drawer"
-      :mini-variant.sync="miniDrawer"
-    >
-      <v-list-item  style="position:absolute;left:5px;height:48px;" dense>
-        <v-list-item-avatar large left class="secondary">
-          <v-icon dark>mdi-file-tree</v-icon>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title class="title">
-            Files
-          </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-      <v-divider class="mt-12"></v-divider>
-
-      <v-list-item nav>
-        <v-list-item-content>
-        
-      </v-list-item-content>
-    </v-list-item>
-  </v-navigation-drawer>
-  </div>
+    <Files/>
     <v-content>
       <v-container grid-list-md fill-height style="max-width:100%;">
         <v-layout
@@ -74,6 +44,7 @@
 
 <script>
 import AppBar from './components/AppBar'
+import Files from './components/Files'
 import RenderPanel from './components/RenderPanel'
 import EditPanel from './components/EditPanel'
 import store from './store.js'
@@ -84,7 +55,8 @@ export default {
   components: {
     RenderPanel,
     EditPanel,
-    AppBar
+    AppBar,
+    Files
   },
   data: () => ({
     snackbar: {
@@ -92,8 +64,6 @@ export default {
       text: '',
       color: '',
     },
-    drawer: true,
-    miniDrawer: false
   }),
   computed: {
     isWrapped: function() {
