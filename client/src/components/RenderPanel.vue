@@ -108,7 +108,7 @@ export default {
   components: { RenderPanelPdf, RenderPanelHtml, EmptyRender },
   directives: { Scroll },
   data : () => ({
-    store: store,
+    store: store.data,
     preparingDL: false,
     renderingSmoothed: false, // rendering boolean without short spikes
     pdfLoading: false

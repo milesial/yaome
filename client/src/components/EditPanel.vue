@@ -22,7 +22,7 @@
               Settings
             </v-btn>
           </template>
-          <EditPanelOptions @close="optionsMenu = false" :options="options" :easyMDE="easyMDE"/>
+          <EditPanelOptions :options="options" :easyMDE="easyMDE"/>
         </v-menu>
       <v-list-item-avatar large class="mt-1 mr-2 secondary">
         <v-icon dark>mdi-pencil</v-icon>
@@ -62,7 +62,7 @@ import 'codemirror/addon/search/jump-to-line.js'
 export default {
   components: { EditPanelOptions },
   data: () => ({
-    store: store,
+    store: store.data,
     textStyle: undefined,
     easyMDE: null,
     optionsMenu: false,

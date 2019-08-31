@@ -3,11 +3,13 @@ const sessions = require('client-sessions')
 const { exec } = require('child_process')
 const options = require('./options')
 const { initUser, registerUser, deleteUser } = require('./user-utils.js')
-const { getFileHierarchy, createFile, createDirectory, deleteFileOrDir } = require('./files.js')
+const { getFileHierarchy, pathExists, createFile, importFile, createDirectory, deleteFileOrDir } = require('./files.js')
 const oauth = require('./auth/oauth.js')
 const login = require('./auth/login.js')
 const register = require('./auth/register.js')
 const logout = require('./auth/logout.js')
+const path = require('path')
+const multer = require('multer')
 
 let router = express.Router()
 
@@ -99,23 +101,36 @@ router.get('/files', (req, res, next) => {
 })
 
 // create a file or a directory
-router.post('/files', express.urlencoded({ extended: false }), (req, res, next) => {
-  if (!req.body.name || !req.body.type)
-    return next('Need a name and a type')
+router.post('/files', express.json(), multer().array('files'), (req, res, next) => {
+  // files upload handled by multer (multipart form data)
+  if (req.files) {
+    return createDirectory(req.session.id, req.body.path)
+      .then(() => Promise.all(req.files.map(f => importFile(
+	req.session.id, path.join(req.body.path, f.originalname), f.buffer)
+      )))
+      .then(() => res.end())
+      .catch(next)
+  }
 
-  if (!['directory', 'file'].contains(req.body.type))
+  // empty file / dir creation
+  if (!req.body.path || !req.body.type)
+    return next('Need a path and a type')
+
+  if (!['directory', 'file'].includes(req.body.type))
     return next('Type must be a file or a directory')
 
-  let path = req.body.name.replace('../', '')
-  if (req.body.type == 'file') {
-    createFile(path)
-      .catch(next)
-      .then(() => res.end())
-  } else {
-    createDirectory(path)
-      .catch(next)
-      .then(() => res.end())
-  }
+  pathExists(req.session.id, req.body.path)
+    .then(exists => {
+      if (exists)
+        throw 'Path already exists'
+
+      if (req.body.type == 'file')
+        return createFile(req.session.id, req.body.path)
+      else
+        return createDirectory(req.session.id, req.body.path)
+    })
+    .then(() => res.end())
+    .catch(next)
 })
 
 // delete a file or a directory
@@ -123,8 +138,7 @@ router.delete('/files', express.urlencoded({ extended: false }), (req, res, next
   if (!req.body.name)
     next('Need a name')
 
-  let path = req.body.name.replace('../', '')
-  deleteFileOrDir(path)
+  deleteFileOrDir(req.session.id, req.body.path)
     .catch(next)
     .then(() => res.end())
 })

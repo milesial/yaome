@@ -3,13 +3,11 @@
 import store from '../store.js'
 import renderMathInElement from 'katex/dist/contrib/auto-render.mjs'
 import 'katex/dist/katex.min.css'
-import MathJax from 'mathjax'
-
 
 export default {
   props: ['useKatex'],
   data: () => ({
-    store,
+    store: store.data,
     curr: '<div>a</div>',
     k: 0
   }),

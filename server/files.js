@@ -1,9 +1,18 @@
 const fse = require('fs-extra')
-const dirTree = require("directory-tree")
+const dirTree = require('directory-tree')
+const path = require('path')
+
+let sanitize = p => path.normalize(p).replace(/^(\.\.(\/|\\|$))+/, '')
+let getPath = (userId, name) => path.join('./files', `${userId}/${sanitize(name)}`)
+let removePrefix = (userId, p) => path.relative(getPath(userId, ''), p)
 
 module.exports = {
-  createFile: (userId, name) => fse.createFile(`./files/${userId}/${name}`),
-  deleteFileOrDir: (userId, name) => fse.remove(`./files/${userId}/${name}`),
-  getFileHierarchy: (userId) => dirTree(`./files/${userId}`, { attributes: ['name', 'path'] }),
-  createDirectory: (userId, name) => fse.mkdirs(`./files/${userId}/${name}`),
+  pathExists: (userId, name) => fse.pathExists(getPath(userId, name)),
+  createFile: (userId, name) => fse.createFile(getPath(userId, name)),
+  importFile: (userId, name, buffer) => fse.createFile(getPath(userId, name)).then(() => fse.writeFile(getPath(userId, name), buffer)),
+  deleteFileOrDir: (userId, name) => fse.remove(getPath(userId, name)),
+  getFileHierarchy: (userId) => dirTree(getPath(userId, ''), {},
+    i => { i.path = removePrefix(userId, i.path) }, // cb for files
+    i => { i.path = removePrefix(userId, i.path) }), // cb for dirs
+  createDirectory: (userId, name) => fse.mkdirs(getPath(userId, name)),
 }

@@ -119,7 +119,7 @@ import Login from './Login'
 export default {
   components: { Login },
   data: () => ({
-    store,
+    store: store.data,
     loginDialog: false
   }),
   methods: {

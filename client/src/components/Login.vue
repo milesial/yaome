@@ -216,7 +216,7 @@ export default {
           vm.loading = false
           if (this.readyState == 4 && this.status == 200) {
             // login successful
-            store.logged = true
+            store.data.logged = true
             vm.$emit('login', vm.email.split('@')[0])
             vm.$emit('close')
           } else if (this.readyState == 4) {

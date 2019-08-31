@@ -28,7 +28,7 @@ import EventBus from '../event-bus.js'
 export default {
   components: { RenderPanelPdfPage },
   data: () => ({
-    render: store.render,
+    render: store.data.render,
     pdfPages: [],
     paginationSelect: 1,
     numPages: 0,

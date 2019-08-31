@@ -1,5 +1,6 @@
 <template>
-  <v-app>
+  <v-app
+  >
     <AppBar
       @success="showSuccessSnackbar"
       @centerPanels="centerPanels"
@@ -11,7 +12,6 @@
     <v-content>
       <v-container grid-list-md fill-height style="max-width:100%;">
         <v-layout
-          v-resize="centerPanels"
           text-center>
           <v-flex class="flex-panel pr-0" ref="leftpanel">
             <v-card class="panel"><EditPanel/></v-card>
@@ -49,6 +49,16 @@ import RenderPanel from './components/RenderPanel'
 import EditPanel from './components/EditPanel'
 import store from './store.js'
 import EventBus from './event-bus.js'
+import axios from 'axios'
+
+axios.interceptors.response.use(res => res, err => {
+  if (err.response && err.response.data && err.response.data.error)
+    return Promise.reject(err.response.data.error)
+  else if (err.response && err.response.data)
+    return Promise.reject(err.response.data)
+  else
+    return Promise.reject(err)
+})
 
 export default {
   name: 'App',
@@ -74,9 +84,9 @@ export default {
     makeResizableDiv(this.$refs.rightpanel, this.$refs.resizer)
     // fix for the pdf generation without any resizes first
     this.centerPanels()
-    if (store.logged && store.name)
-      this.showSuccessSnackbar(`Welcome ${store.name} !`)
-    else if (store.logged)
+    if (store.data.logged && store.data.name)
+      this.showSuccessSnackbar(`Welcome ${store.data.name} !`)
+    else if (store.data.logged)
       this.showSuccessSnackbar(`Welcome !`)
     else
       this.showPrimarySnackbar('Remember to sign in to save your work.')
@@ -129,9 +139,11 @@ export default {
   },
   created() {
     EventBus.$on('error', this.showErrorSnackbar)
+    EventBus.$on('success', this.showSuccessSnackbar)
   },
   beforeDestroy() {
     EventBus.$off('error', this.showErrorSnackbar)
+    EventBus.$off('success', this.showSuccessSnackbar)
   }
 }
 
