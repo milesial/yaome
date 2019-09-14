@@ -134,11 +134,11 @@ router.post('/files', express.json(), multer().array('files'), (req, res, next) 
 })
 
 // delete a file or a directory
-router.delete('/files', express.urlencoded({ extended: false }), (req, res, next) => {
-  if (!req.body.name)
-    next('Need a name')
+router.delete('/files', (req, res, next) => {
+  if (!req.query.path)
+    next('Need a path')
 
-  deleteFileOrDir(req.session.id, req.body.path)
+  deleteFileOrDir(req.session.id, req.query.path)
     .catch(next)
     .then(() => res.end())
 })

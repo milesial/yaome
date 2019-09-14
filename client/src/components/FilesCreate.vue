@@ -42,11 +42,10 @@
           <v-col>
             <v-combobox
               label="Path to import to"
-              autofocus
-              ref="name"
               prepend-icon="mdi-folder-outline"
               placeholder="mydirectory/"
               auto-select-first
+              ref="nameImport"
               color="primary"
               hide-no-data
               :search-input.sync="path"
@@ -111,6 +110,28 @@ export default {
     tab: 0,
     type: 'file'
   }),
+  watch: {
+    opened(v) {
+      if (!v)
+        return
+      setTimeout(() => {
+        if (this.$refs.name)
+          this.$refs.name.focus()
+      }, 100)
+    },
+    tab(v) {
+      if (v == 0)
+        setTimeout(() => {
+          if (this.$refs.name)
+            this.$refs.name.focus()
+        }, 200)
+      else
+        setTimeout(() => {
+          if (this.$refs.nameImport)
+            this.$refs.nameImport.focus()
+        }, 200)
+    }
+  },
   methods: {
     create() {
       axios.post('/files', {

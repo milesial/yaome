@@ -23,11 +23,14 @@
           <v-snackbar
             v-model="snackbar.show"
             bottom
-            class="pb-5 subtitle-1 font-weight-medium"
+            class="py-8 subtitle-1"
             :timeout="6000"
             :color="snackbar.color"
           >
-            {{ snackbar.text }}
+            <v-icon dark v-if="snackbar.type == 'success'">mdi-check-circle</v-icon>
+            <v-icon dark v-if="snackbar.type == 'info'">mdi-information</v-icon>
+            <v-icon dark v-if="snackbar.type == 'error'">mdi-alert-circle</v-icon>
+            <span class="ml-4" v-html="snackbar.text"></span>
             <v-btn
               dark
               text
@@ -73,6 +76,7 @@ export default {
       show: false,
       text: '',
       color: '',
+      type: ''
     },
   }),
   computed: {
@@ -85,9 +89,9 @@ export default {
     // fix for the pdf generation without any resizes first
     this.centerPanels()
     if (store.data.logged && store.data.name)
-      this.showSuccessSnackbar(`Welcome ${store.data.name} !`)
+      this.showPrimarySnackbar(`Welcome ${store.data.name} !`)
     else if (store.data.logged)
-      this.showSuccessSnackbar(`Welcome !`)
+      this.showPrimarySnackbar(`Welcome !`)
     else
       this.showPrimarySnackbar('Remember to sign in to save your work.')
   },
@@ -96,16 +100,19 @@ export default {
       this.snackbar.text = text
       this.snackbar.color = 'error'
       this.snackbar.show = true
+      this.snackbar.type = 'error'
     },
     showSuccessSnackbar: function(text) {
       this.snackbar.text = text
       this.snackbar.color = 'success'
       this.snackbar.show = true
+      this.snackbar.type = 'success'
     },
     showPrimarySnackbar: function(text) {
       this.snackbar.text = text
       this.snackbar.color = 'primary darken-1'
       this.snackbar.show = true
+      this.snackbar.type = 'info'
     },
     centerPanels: function() {
       if (this.isWrapped) {

@@ -40,7 +40,7 @@
                   :disabled="loading"
                   validate-on-blur
                   @keydown.enter="submit"
-                  @input="error.show = false;$refs.loginForm.validate()"
+                  @input="error.show = false;$refs.loginEmail.validate()"
                   required />
                 <v-text-field 
                   class="form-input"
@@ -93,7 +93,7 @@
                   :disabled="loading"
                   validate-on-blur
                   @keydown.enter="submit"
-                  @input="error.show = false;$refs.registerForm.validate()"
+                  @input="error.show = false;$refs.registerEmail.validate()"
                   hint="We won't share your email with anyone"
                   required />
                 <v-text-field 

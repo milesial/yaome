@@ -1,7 +1,7 @@
 <template>
+  <div style="max-width:100%;">
   <v-treeview
     :items="store.files.tree.children"
-    rounded
     expand-icon="mdi-chevron-down"
     open-on-click
     transition
@@ -16,11 +16,57 @@
         {{ icons[item.extension.slice(1)] ? icons[item.extension.slice(1)] : 'mdi-file' }}
       </v-icon>
     </template>
+    <template v-slot:append="{ item, open }">
+      <v-tooltip right>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon @click.stop="removeConfirm(item)" class="delete-btn">
+            <v-icon>
+              mdi-delete
+            </v-icon>
+          </v-btn>
+        </template>
+        <span>Remove {{ item.type }}</span>
+      </v-tooltip>
+    </template>
   </v-treeview>
+    <v-dialog
+      v-model="deleteDialog.show"
+      max-width="400"
+    >
+      <v-card v-if="deleteDialog.what">
+        <v-card-title class="headline"><v-icon large class="mr-4">mdi-delete</v-icon>Delete this {{ deleteDialog.what.type }} ?</v-card-title>
+        <v-card-text>
+          The content of the <strong>{{ deleteDialog.what.name }}</strong> {{ deleteDialog.what.type }} will be lost.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            text
+            @click="deleteDialog.show = false"
+          >
+            <v-icon class="mr-2">mdi-close-circle</v-icon>
+            Cancel
+          </v-btn>
+
+          <v-btn
+            color="error"
+            text
+            @click="deleteDialog.show = false; remove(deleteDialog.what)"
+          >
+            <v-icon class="mr-2">mdi-delete-circle</v-icon>
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
 import store from '../store.js'
+import axios from 'axios'  
+import EventBus from '../event-bus.js'
 
 export default {
   data: () => ({
@@ -35,7 +81,45 @@ export default {
       txt: 'mdi-file-document-outline',
       xls: 'mdi-file-excel',
     },
+    deleteDialog: {
+      show: false,
+      what: null
+    }
   }),
+  methods: {
+    removeConfirm(item) {
+      this.deleteDialog.what = item
+      this.deleteDialog.show = true
+    },
+    remove(item) {
+      axios.delete('/files', {
+        params: { path: item.path }
+      })
+        .then(() => {
+          store.updateFilesTree()
+          if (item.type == 'file')
+            EventBus.$emit('success', `File <strong>${item.name}</strong> deleted !`)
+          else
+            EventBus.$emit('success', `Directory <strong>${item.name}</strong> deleted !`)
+        })
+        .catch(err => EventBus.$emit('error', err))
+    }
+
+  }
 }
 
 </script>
+
+<style>
+
+.v-treeview-node__root .delete-btn {
+  display: none;
+}
+.v-treeview-node__root:hover .delete-btn {
+  display: flex;
+}
+
+.v-treeview-node__root {
+  margin: 0;
+}
+</style>

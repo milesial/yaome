@@ -4,8 +4,35 @@
     "port": 5432,
     "db":   "postgres",
     "user": "postgres",
-    "pass": "H/.9FYZ`x9T%tCw%"
+    "pass": "redacted"
   },
   "port": 80,
-  "secret": "e1eb764d0c7450b5e685af875e2d840d81f3939d2cc6777c5ab2b0ff45574067"
+  "secret": "redacted",
+  "oauth": {
+    "github": {
+      "secret": "redacted",
+      "id": "redacted",
+      "scope": "[]"
+    },
+    "google": {
+      "secret": "redacted",
+      "id": "redacted",
+      "scope": "openid profile"
+    },
+    "facebook": {
+      "secret": "redacted",
+      "id": "redacted",
+      "scope": ""
+    },
+    "twitter": {
+      "secret": "redacted",
+      "id": "redacted",
+      "scope": ""
+    },
+    "gitlab": {
+      "secret": "redacted",
+      "id": "redacted",
+      "scope": "openid"
+    }
+  }
 }
