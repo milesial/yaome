@@ -149,7 +149,7 @@ router.get('/zip', (req, res, next) => {
     .on('error', err => next(err))
     .pipe(stream)
 
-  stream.on('close', () => res.sendFile(`${req.session.id}.zip`, { root: './server/zips' }))
+  stream.on('close', () => res.download(`./server/zips/${req.session.id}.zip`, 'notes.zip'))
   archive.finalize()
 })
 
