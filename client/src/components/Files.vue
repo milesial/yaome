@@ -1,29 +1,29 @@
  <template>
-   <div @mouseover="mini=false" @mouseout="mini=true" style="overflow-y:hidden">
+   <div @mouseover="mini=false" @mouseleave="mini=true" style="overflow-y:hidden">
     <v-navigation-drawer
       class="elevation-10"
       app
       clipped
       permanent
       :mini-variant="mini && !createMenu"
+      mini-variant-width="50"
       style="overflow-y: hidden;"
     >
-        <v-list-item style="position: absolute;width:100%" class="my-3">
+      <v-list-item style="position: absolute;" class="my-3 px-1">
         <v-list-item-avatar large left class="secondary">
           <v-icon dark>mdi-file-tree</v-icon>
         </v-list-item-avatar>
         <v-list-item-content class="py-0 my-0">
-          <v-list-item-title class="title">
+          <v-list-item-title class="title mr-6">
             Files
           </v-list-item-title>
         </v-list-item-content>
-        <v-list-item-action class="py-0 my-0">
+        <v-list-item-action class="py-0 my-0 ml-12">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <div v-on="on">
                 <v-menu
                   v-model="createMenu"
-                  eager
                   :close-on-content-click="false"
                 >
                   <template v-slot:activator="{ on }">
@@ -43,9 +43,11 @@
       </v-list-item>
       <v-divider></v-divider>
 
-      <v-list-item class="mt-12 pt-4 pr-0">
+      <v-list-item class="mt-12 pt-4 mx-2 px-0">
         <v-list-item-content>
-          <FilesTree />
+          <FilesTree
+            :extended="!mini || createMenu"
+          />
       </v-list-item-content>
     </v-list-item>
   </v-navigation-drawer>

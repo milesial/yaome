@@ -13,7 +13,7 @@
       </v-app-bar-nav-icon>
       <v-toolbar-title>Yaome</v-toolbar-title>
       <v-spacer></v-spacer>
-      <div class="d-none d-sm-flex" style="position:absolute;left:50%;transform:translateX(-50%);padding-left:80px;">
+      <div class="d-none d-sm-flex" style="position:absolute;left:50%;transform:translateX(-50%);padding-left:50px;">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn

@@ -3,6 +3,7 @@
 import store from '../store.js'
 import renderMathInElement from 'katex/dist/contrib/auto-render.mjs'
 import 'katex/dist/katex.min.css'
+import EventBus from '../event-bus.js'
 
 export default {
   props: ['useKatex'],
@@ -13,18 +14,24 @@ export default {
   }),
   methods: {
     processMath() {
-      /*renderMathInElement(document.getElementById('renderHtml'), {
+      if (this.useKatex) {
+        renderMathInElement(document.getElementById('renderHtml'), {
           throwOnError: true,
           errorCallback: err => {
             EventBus.$emit('error', escape(err))
           },
           ignoredClasses: ['cachedmath'],
-        })*/
-          MathJax.Hub.Queue(["resetEquationNumbers", MathJax.InputJax.TeX], ["Typeset",MathJax.Hub])
+        })
+      } else {
+        MathJax.Hub.Queue(["resetEquationNumbers", MathJax.InputJax.TeX], ["Typeset",MathJax.Hub])
+      }
     },
     createVirtualDOM(h, node, ignoremath) {
-      if (node.nodeType == 3) // text node
+      if (node.nodeType == Node.TEXT_NODE) // text node
         return this._v(node.textContent)
+
+      if (node.nodeType != Node.ELEMENT_NODE)
+        return null
 
       if (!ignoremath && (node.className == "math inline" || node.className == "math display")) {
         return h('span', {

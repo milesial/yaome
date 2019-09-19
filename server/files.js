@@ -8,7 +8,7 @@ let removePrefix = (userId, p) => path.relative(getPath(userId, ''), p)
 
 module.exports = {
   pathExists: (userId, name) => fse.pathExists(getPath(userId, name)),
-  createFile: (userId, name) => fse.createFile(getPath(userId, name)),
+  createFile: (userId, name) => fse.createFile(getPath(userId, name)).then(() => userId),
   importFile: (userId, name, buffer) => fse.createFile(getPath(userId, name)).then(() => fse.writeFile(getPath(userId, name), buffer)),
   deleteFileOrDir: (userId, name) => fse.remove(getPath(userId, name)),
   getFileHierarchy: (userId) => dirTree(getPath(userId, ''), {},

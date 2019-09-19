@@ -204,6 +204,11 @@ export default {
       }
     },
   },
+  mounted() {
+    setTimeout(() => {
+      this.$refs.loginEmail.focus()
+    }, 100)
+  },
   methods: {
     submit() {
       if(this.$refs.loginForm.validate()) {

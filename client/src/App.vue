@@ -87,7 +87,7 @@ export default {
   mounted: function() {
     makeResizableDiv(this.$refs.rightpanel, this.$refs.resizer)
     // fix for the pdf generation without any resizes first
-    this.centerPanels()
+    this.$nextTick(() => this.centerPanels())
     if (store.data.logged && store.data.name)
       this.showPrimarySnackbar(`Welcome ${store.data.name} !`)
     else if (store.data.logged)

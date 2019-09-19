@@ -2,11 +2,13 @@ const crypto = require('crypto')
 const fse = require('fs-extra')
 const bcrypt = require('bcrypt')
 const db = require('./db.js')
+const files = require('./files.js')
 
 module.exports = {
   initUser: function() {
     return createUserEntry()
       .then(id => createUserDirectory(id))
+      .then(id => files.createFile(id, 'main.md'))
   },
   registerUser: function(userId, email, password) {
     return bcrypt.hash(password, 10)

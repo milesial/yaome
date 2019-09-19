@@ -1,6 +1,6 @@
 const express = require('express')
 const sessions = require('client-sessions')
-const { exec } = require('child_process')
+const { spawn } = require('child_process')
 const options = require('./options')
 const { initUser, registerUser, deleteUser } = require('./user-utils.js')
 const { getFileHierarchy, pathExists, createFile, importFile, createDirectory, deleteFileOrDir } = require('./files.js')
@@ -74,20 +74,45 @@ router.post('/render/:output', express.json(), (req, res, next) => {
     res.set('Content-Disposition', `attachment; filename="${req.body.file}.${format}"`)
   }
 
-  let suffix = ''
-  if (format == 'pdf')
-    suffix = `-t latex -o ./server/render/${req.session.id}.pdf`
-  else if (format == 'html')
-    suffix = '-t html'
+  if (format == 'pdf') {
+    options.push('--to=latex')
+    options.push(`--output=./server/render/${req.session.id}.pdf`)
+  }
+  else if (format == 'html') {
+    options.push('--mathjax')
+    options.push('--to=html')
+  }
 
-  exec(`printf '%s\n' '${md}' | pandoc ${options.join(" ")} -f markdown ${suffix}`, (err, stdout, stderr) => {
-    if (err)
-      next(err)
-    else if (format == 'pdf')
-      res.sendFile(`${req.session.id}.pdf`, { root: './server/render/' })
-    else if (format == 'html')
-      res.set('content-type', 'text/html').send(stdout)
+  let child = spawn('pandoc', options)
+
+  if (format == 'pdf') {
+    child.on('exit', code => {
+      if (!code)
+        res.sendFile(`${req.session.id}.pdf`, { root: './server/render/' })
+    })
+  } else if (format == 'html') {
+    let runningBuffer = ''
+    child.stdout.on('data', (data) => {
+      runningBuffer += data.toString()
+    })
+
+    child.stdout.on('end', () => {
+      if (runningBuffer != '')
+        res.set('content-type', 'text/html').send(runningBuffer)
+    })
+  }
+
+  let stderr = ''
+  child.stderr.on('data', (data) => {
+    stderr += data.toString()
   })
+  child.stderr.on('end', () => {
+    if (stderr != '') {
+      next(stderr)
+    }
+  })
+
+  child.stdin.end(md)
 })
 
 // get the user's files in a tree structure (json)

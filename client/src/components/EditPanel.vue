@@ -3,6 +3,7 @@
     column
     fill-height
     class="ma-0"
+    v-resize="onResize"
   >
     <v-flex id="editbox" class="ma-0 pa-0" ref="editbox">
       <div id="editbar-right">
@@ -30,7 +31,7 @@
 
 
     </div>
-      <textarea v-resize="onResize">
+      <textarea>
       </textarea>
       <!--v-textarea
         v-model="store.markdown"
@@ -45,6 +46,7 @@
 
 <script>
 import 'codemirror/lib/codemirror.css'
+import resize from 'vue-resize-directive'
 import store from '../store.js'
 import EditPanelOptions from './EditPanelOptions'
 import EasyMDE from 'easymde'
@@ -60,6 +62,7 @@ import 'codemirror/addon/search/search.js'
 import 'codemirror/addon/search/jump-to-line.js'
 
 export default {
+  directives: { resize },
   components: { EditPanelOptions },
   data: () => ({
     store: store.data,

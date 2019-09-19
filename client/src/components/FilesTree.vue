@@ -1,13 +1,22 @@
 <template>
   <div style="max-width:100%;">
   <v-treeview
+    v-show="extended"
     :items="store.files.tree.children"
+    activatable
+    :active.sync="activeFiles"
     expand-icon="mdi-chevron-down"
     open-on-click
     transition
     item-key="path"
-    activatable
+    rounded
+    :open="openDirs"
   >
+    <template v-slot:label="{ item, open }">
+      <span>
+        {{ item.name }}
+      </span>
+    </template>
     <template v-slot:prepend="{ item, open }">
       <v-icon v-if="item.type == 'directory'">
         {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
@@ -69,23 +78,41 @@ import axios from 'axios'
 import EventBus from '../event-bus.js'
 
 export default {
+  props: ['extended'],
   data: () => ({
     store: store.data,
     icons: {
       html: 'mdi-language-html5',
-      js: 'mdi-nodejs',
+      js:   'mdi-nodejs',
       json: 'mdi-json',
-      md: 'mdi-markdown',
-      pdf: 'mdi-file-pdf',
-      png: 'mdi-file-image',
-      txt: 'mdi-file-document-outline',
-      xls: 'mdi-file-excel',
+      md:   'mdi-markdown',
+      pdf:  'mdi-file-pdf',
+      png:  'mdi-file-image',
+      txt:  'mdi-file-document-outline',
+      xls:  'mdi-file-excel',
     },
+    activeFiles: [store.data.files.selected],
     deleteDialog: {
       show: false,
       what: null
-    }
+    },
+    openDirs: []
   }),
+  computer: {
+    openDirs() {
+      split = this.store.files.selected.split('/')
+
+    }
+  },
+  watch: {
+    activeFiles(newV, oldV) {
+      if (newV.length == 0)
+        this.$nextTick(() => this.activeFiles = oldV)
+      else {
+        this.store.files.selected = newV[0]
+      }
+    }
+  },
   methods: {
     removeConfirm(item) {
       this.deleteDialog.what = item
@@ -120,6 +147,6 @@ export default {
 }
 
 .v-treeview-node__root {
-  margin: 0;
+  margin: 0 !important;
 }
 </style>
