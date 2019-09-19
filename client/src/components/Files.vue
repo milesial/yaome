@@ -50,6 +50,18 @@
           />
       </v-list-item-content>
     </v-list-item>
+    <v-btn
+      block
+      text
+      tile
+      v-show="!mini || createMenu"
+      absolute
+      style="bottom:0;"
+      @click="downloadZip()"
+    >
+      <v-icon class="mr-2">mdi-folder-zip</v-icon>
+      Download as archive
+    </v-btn>
   </v-navigation-drawer>
 </div>
 </template>
@@ -65,7 +77,12 @@ export default {
     mini: true,
     createMenu: false,
     store: store.data
-  })
+  }),
+  methods: {
+    downloadZip() {
+      window.location.href = '/zip'
+    }
+  }
 }
 
 </script>

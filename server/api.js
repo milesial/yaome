@@ -3,13 +3,15 @@ const sessions = require('client-sessions')
 const { spawn } = require('child_process')
 const options = require('./options')
 const { initUser, registerUser, deleteUser } = require('./user-utils.js')
-const { getFileHierarchy, pathExists, createFile, importFile, createDirectory, deleteFileOrDir } = require('./files.js')
+const { getPath, getFileHierarchy, pathExists, createFile, importFile, createDirectory, deleteFileOrDir } = require('./files.js')
 const oauth = require('./auth/oauth.js')
 const login = require('./auth/login.js')
 const register = require('./auth/register.js')
 const logout = require('./auth/logout.js')
 const path = require('path')
 const multer = require('multer')
+const archiver = require('archiver')
+const fs = require('fs')
 
 let router = express.Router()
 
@@ -56,6 +58,9 @@ router.delete('/user', function(req, res, next) {
 
 // checks on the render format requested
 router.use('/render/:output', (req, res, next) => {
+  if (!req.params.output)
+    next('Need an output parameter')
+
   let format = req.params.output
   if (!['html', 'pdf'].includes(format))
     return next(`Unknown output format: ${format}`)
@@ -63,8 +68,18 @@ router.use('/render/:output', (req, res, next) => {
   next()
 })
 
+// save to file
+router.use('/render/:output', express.json(), (req, res, next) => {
+  if (!req.body.file)
+    next('Need a file parameter')
+
+  // write file but don't wait for callback
+  fs.writeFile(getPath(req.session.id, req.body.file), req.body.markdown, () => {})
+  next()
+})
+
 // actual rendering using pandoc
-router.post('/render/:output', express.json(), (req, res, next) => {
+router.post('/render/:output', (req, res, next) => {
   let format = req.params.output
   let md = req.body.markdown
 
@@ -123,6 +138,19 @@ router.get('/files', (req, res, next) => {
 
   res.send(getFileHierarchy(req.session.id))
   next()
+})
+
+router.get('/zip', (req, res, next) => {
+  const archive = archiver('zip', { zlib: { level: 9 }})
+  const stream = fs.createWriteStream(`./server/zips/${req.session.id}.zip`)
+
+  archive
+    .directory(`./files/${req.session.id}`, false)
+    .on('error', err => next(err))
+    .pipe(stream)
+
+  stream.on('close', () => res.sendFile(`${req.session.id}.zip`, { root: './server/zips' }))
+  archive.finalize()
 })
 
 // create a file or a directory
