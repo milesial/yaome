@@ -8,6 +8,7 @@
     <v-flex id="editbox" class="ma-0 pa-0" ref="editbox">
       <div id="editbar-right">
         <v-menu
+          v-if="topOptions"
           v-model="optionsMenu"
           :close-on-content-click="false"
           offset-x
@@ -25,21 +26,34 @@
           </template>
           <EditPanelOptions :options="options" :easyMDE="easyMDE"/>
         </v-menu>
-      <v-list-item-avatar large class="mt-1 mr-2 secondary">
-        <v-icon dark>mdi-pencil</v-icon>
-      </v-list-item-avatar>
-
-
-    </div>
+        <v-list-item-avatar large class="mt-1 mr-2 secondary">
+          <v-icon dark>mdi-pencil</v-icon>
+        </v-list-item-avatar>
+      </div>
+      <v-menu
+        v-if="!topOptions"
+        v-model="optionsMenu"
+        :close-on-content-click="false"
+        offset-x
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn
+            absolute
+            dark
+            fab
+            bottom
+            right
+            v-on="on"
+            color="primary"
+            style="bottom: 20px;opacity: 50%;"
+          >
+            <v-icon>settings</v-icon>
+          </v-btn>
+        </template>
+        <EditPanelOptions :options="options" :easyMDE="easyMDE"/>
+      </v-menu>
       <textarea>
       </textarea>
-      <!--v-textarea
-        v-model="store.markdown"
-        autofocus
-        ref="textarea"
-        flat
-        no-resize
-      /-->
     </v-flex>
   </v-layout>
 </template>
@@ -75,6 +89,7 @@ export default {
       showLines: true,
       styleLine: true
     },
+    topOptions: true
 
   }),
   mounted() {
@@ -166,12 +181,20 @@ export default {
     this.onResize()
   },
   methods: {
-    onResize() {
+    onResize(e) {
+      if (e) {
+        if (e.getBoundingClientRect().width < document.querySelector('.editor-toolbar > button:last-child').getBoundingClientRect().right + 150)
+          this.topOptions = false
+        else
+          this.topOptions = true
+      }
+
       const panelH = this.$refs.editbox.getBoundingClientRect().height
       if (!document.querySelector('#editbox .editor-toolbar'))
         return
       const offsetTop = document.querySelector('#editbox .editor-toolbar').getBoundingClientRect().height
-       this.easyMDE.codemirror.setSize('100%', panelH - offsetTop + 'px')
+      this.easyMDE.codemirror.setSize('100%', panelH - offsetTop + 'px')
+
     }
   }
 }
