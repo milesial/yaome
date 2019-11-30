@@ -12,12 +12,12 @@
     rounded
     :open="openDirs"
   >
-    <template v-slot:label="{ item, open }">
+    <template v-slot:label="{ item }">
       <span>
         {{ item.name }}
       </span>
     </template>
-    <template v-slot:prepend="{ item, open }">
+    <template v-slot:prepend="{ item }">
       <v-icon v-if="item.type == 'directory'">
         {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
       </v-icon>
@@ -25,7 +25,7 @@
         {{ icons[item.extension.slice(1)] ? icons[item.extension.slice(1)] : 'mdi-file' }}
       </v-icon>
     </template>
-    <template v-slot:append="{ item, open }">
+    <template v-slot:append="{ item }">
       <v-tooltip right>
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" icon @click.stop="removeConfirm(item)" class="delete-btn">
@@ -100,7 +100,6 @@ export default {
   }),
   computer: {
     openDirs() {
-      split = this.store.files.selected.split('/')
 
     }
   },

@@ -23,7 +23,7 @@ export default {
           ignoredClasses: ['cachedmath'],
         })
       } else {
-        MathJax.Hub.Queue(["resetEquationNumbers", MathJax.InputJax.TeX], ["Typeset",MathJax.Hub])
+        // MathJax.Hub.Queue(["resetEquationNumbers", MathJax.InputJax.TeX], ["Typeset",MathJax.Hub])
       }
     },
     createVirtualDOM(h, node, ignoremath) {
