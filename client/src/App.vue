@@ -194,11 +194,18 @@ function makeResizableDiv(divright, resizer) {
   height: 100%;
   margin: 0 auto;
   background-color: var(--v-primary-base);
+  border-radius: 2px;
+  transition: width 0.1s, border-radius 0.1s;
+}
+
+#resizer:hover::before {
+    width: 6px;
+    border-radius: 6px;
 }
 
 .flex-panel {
   box-sizing: border-box;
-  min-width: 20%;
+  min-width: 480px;
   flex: 1 1 auto;
 }
 

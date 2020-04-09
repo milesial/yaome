@@ -7,16 +7,22 @@
     column
     fill-height
   >
-    <v-flex shrink class="py-0">
+    <v-flex shrink class="pa-0">
       <v-toolbar flat dense>
-        <!-- hexagon icon -->
-        <v-toolbar-title class="mx-n4">
-          <v-list-item-avatar large class="ml-2 secondary">
-            <v-icon v-if="!store.rendering" dark>mdi-hexagon-slice-6</v-icon>
-            <v-icon v-else dark>mdi-hexagon-outline</v-icon>
-          </v-list-item-avatar>
-        </v-toolbar-title>
-
+        <v-container fill-height fluid>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <div v-on="on">
+                <v-switch v-model="usePandoc" color="primary">
+                  <template v-slot:label>
+                    <v-icon :color="usePandoc ? 'primary' : ''">mdi-cloud-upload</v-icon>
+                  </template>
+                </v-switch>
+              </div>
+            </template>
+            <span><strong>{{ usePandoc ? 'Disable' : 'Enable' }} server-side rendering.</strong> <br>Server-side rendering is slower<br> but has all the Pandoc features.</span>
+          </v-tooltip>
+        </v-container>
         <v-spacer></v-spacer>
         <!-- download button -->
         <v-tooltip bottom>
@@ -29,11 +35,12 @@
                 :disabled="markdownIsEmpty"
                 icon
               >
-                <v-icon>mdi-file-download-outline</v-icon>
+                <v-icon v-if="selectedFormat == 'pdf'">mdi-file-pdf</v-icon>
+                <v-icon v-else>mdi-file-download</v-icon>
               </v-btn>
             </div>
           </template>
-          <span>Download file</span>
+          <span>Download {{selectedFormat.toUpperCase()}}</span>
         </v-tooltip>
         <!-- refresh button -->
         <v-tooltip bottom>
@@ -57,13 +64,17 @@
           inset
         ></v-divider>
         <!-- tabs for output formats -->
-        <v-flex shrink>
+        <v-flex shrink class="mx-0 px-0">
           <v-tabs
             v-model="store.selectedFormatId"
             @change="updateManual"
             right
           >
-            <v-tab v-for="f in store.availableFormats" :key="f" :disabled="markdownIsEmpty">{{ f }}</v-tab>
+              <v-tab v-for="f in store.availableFormats" :key="f" :disabled="markdownIsEmpty" class="px-5">
+                <v-icon v-if="f=='pdf'" class="mr-3">mdi-adobe-acrobat</v-icon>
+                <v-icon v-if="f=='html'" class="mr-3">mdi-language-html5</v-icon>
+                {{ f }}
+              </v-tab>
           </v-tabs>
         </v-flex>
       </v-toolbar>
@@ -111,7 +122,8 @@ export default {
     store: store.data,
     preparingDL: false,
     renderingSmoothed: false, // rendering boolean without short spikes
-    pdfLoading: false
+    pdfLoading: false,
+    usePandoc: true,
   }),
   created: function() {
     this.update = _.debounce(this.update, 200)
@@ -208,5 +220,9 @@ export default {
 <style>
 #render-container .v-window, #render-container .v-window__container {
   position: static !important; /* So the pdf page select aligns to the bottom */
+}
+
+#render-layout .v-toolbar__content {
+  padding-right: 0px;    
 }
 </style>

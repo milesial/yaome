@@ -26,9 +26,6 @@
           </template>
           <EditPanelOptions :options="options" :easyMDE="easyMDE"/>
         </v-menu>
-        <v-list-item-avatar large class="mt-1 mr-2 secondary">
-          <v-icon dark>mdi-pencil</v-icon>
-        </v-list-item-avatar>
       </div>
       <v-menu
         v-if="!topOptions"
@@ -45,7 +42,7 @@
             right
             v-on="on"
             color="primary"
-            style="bottom: 20px;opacity: 50%;"
+            style="bottom: 20px"
           >
             <v-icon>settings</v-icon>
           </v-btn>

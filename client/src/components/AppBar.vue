@@ -9,7 +9,7 @@
       class="pr-0"
     >
       <v-app-bar-nav-icon @click="$emit('drawer')">
-        <v-icon>mdi-chart-donut</v-icon>
+        <v-icon>mdi-menu</v-icon>
       </v-app-bar-nav-icon>
       <v-toolbar-title>Yaome</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -19,12 +19,12 @@
             <v-btn
               v-on="on"
               icon
-              @click="$emit('maxEdit')"
+              @click="$emit('maxRender')"
             >
-              <v-icon large>mdi-arrow-collapse-right</v-icon>
+              <v-icon large>mdi-chevron-double-left</v-icon>
             </v-btn>
           </template>
-          <span>Maximize edit panel</span>
+          <span>Maximize <strong>render</strong> panel</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -34,28 +34,28 @@
               @click="$emit('centerPanels')"
             >
               <!-- <v-icon large>mdi-format-horizontal-align-center</v-icon> -->
-              <v-icon large>mdi-drag-vertical</v-icon>
+              <v-icon large>mdi-power-on</v-icon>
             </v-btn>
           </template>
-          <span>Make panels even</span>
+          <span>Make panels <strong>even</strong></span>
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn
               v-on="on"
               icon
-              @click="$emit('maxRender')"
+              @click="$emit('maxEdit')"
             >
-              <v-icon large>mdi-arrow-collapse-left</v-icon>
+              <v-icon large>mdi-chevron-double-right</v-icon>
             </v-btn>
           </template>
-          <span>Maximize render panel</span>
+          <span>Maximize <strong>edit</strong> panel</span>
         </v-tooltip>
       </div>
       <v-spacer></v-spacer>
 
       <v-btn
-        class="d-none d-md-flex"
+        class="d-none d-md-flex mx-1"
         id="star-github"
         rounded
         text
@@ -63,8 +63,8 @@
         href="https://github.com/milesial/yaome"
         target="_blank"
       >
-        <v-icon dark class="mr-2">mdi-star</v-icon>
-        Star us on github
+          <v-icon dark class="mr-2">mdi-star-face</v-icon>
+        Star on github!
       </v-btn>
       <v-divider vertical dark></v-divider>
       <v-dialog

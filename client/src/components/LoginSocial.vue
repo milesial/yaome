@@ -12,7 +12,7 @@
       dark
       rounded
       color="#161614"
-    >Github<img height="36" width="36" class="v-icon notranslate provider-logo" src="@/assets/github.svg"/></v-btn>
+    >Github<img height="36" width="36" class="notranslate provider-logo" src="@/assets/github.svg"/></v-btn>
     <v-btn 
       href="/oauth?provider=google"
       @click="loadingGoogle = true"
@@ -24,7 +24,7 @@
       dark
       rounded
       color="#757575"
-    >Google<img height="36" width="36" class="v-icon notranslate provider-logo" src="@/assets/google.svg"/></v-btn>
+    >Google<img height="36" width="36" class="notranslate provider-logo" src="@/assets/google.svg"/></v-btn>
     <v-btn 
       href="/oauth?provider=facebook"
       @click="loadingFacebook = true"
@@ -36,7 +36,7 @@
       dark
       rounded
       color="#3c5a99"
-    >Facebook<img height="36" width="36" class="v-icon notranslate provider-logo" src="@/assets/facebook.svg"/></v-btn>
+    >Facebook<img height="36" width="36" class="notranslate provider-logo" src="@/assets/facebook.svg"/></v-btn>
     <v-btn 
       href="/oauth?provider=gitlab"
       @click="loadingGitlab = true"
@@ -48,7 +48,7 @@
       dark
       rounded
       color="#E24329"
-    >Gitlab<img height="36" width="36" class="v-icon notranslate provider-logo" src="@/assets/gitlab.svg"/></v-btn>
+    >Gitlab<img height="36" width="36" class="notranslate provider-logo" src="@/assets/gitlab.svg"/></v-btn>
   </div>
 </template>
 
