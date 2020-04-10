@@ -3,7 +3,7 @@
     <v-list>
       <v-list-item>
         <v-list-item-avatar>
-          <v-icon large>settings</v-icon>
+          <v-icon large>mdi-tune</v-icon>
           </v-list-item-avatar>
 
           <v-list-item-content>

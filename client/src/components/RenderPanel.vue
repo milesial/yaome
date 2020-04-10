@@ -83,13 +83,17 @@
     <EmptyRender v-show="markdownIsEmpty"/>
     <v-flex v-show="!markdownIsEmpty" id="render-container" class="pa-0">
       <v-tabs-items v-model="store.selectedFormatId">
-        <v-tab-item class="tab-content px-8 text-left" key="html">
+        <v-tab-item 
+          :transition="false" :reverse-transition="false"
+          class="tab-content px-8 text-left" key="html">
           <RenderPanelHtml
             ref="html"
             :useKatex="false"
           />
         </v-tab-item>
-        <v-tab-item class="tab-content" key="pdf">
+        <v-tab-item
+          :transition="false" :reverse-transition="false"
+          class="tab-content" key="pdf">
           <RenderPanelPdf
             ref="pdf"
             :loading="pdfLoading"

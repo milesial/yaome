@@ -1,5 +1,6 @@
 const path = require('path')
 const configureAPI = require('./server/configure')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   publicPath: '',
@@ -23,6 +24,9 @@ module.exports = {
     },
     externals: {
       "mathjax": "MathJax"
-    }
-  }
+    },
+    plugins: [
+      new MonacoWebpackPlugin({'languages': ['markdown']})
+    ]
+  },
 }
