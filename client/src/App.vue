@@ -2,13 +2,14 @@
   <v-app
   >
     <AppBar
+      :miniDrawer="miniDrawer"
       @success="showSuccessSnackbar"
       @centerPanels="centerPanels"
       @maxEdit="maximizeEdit"
       @maxRender="maximizeRender"
       @drawer="miniDrawer = !miniDrawer"
     />
-    <Files/>
+    <Files :miniDrawer="miniDrawer"/>
     <v-content>
       <v-container grid-list-md fill-height style="max-width:100%;">
         <v-layout
@@ -78,6 +79,7 @@ export default {
       color: '',
       type: ''
     },
+    miniDrawer: false,
   }),
   computed: {
     isWrapped: function() {
@@ -114,34 +116,17 @@ export default {
       this.snackbar.show = true
       this.snackbar.type = 'info'
     },
-    centerPanels: function() {
-      if (this.isWrapped) {
-        this.$refs.rightpanel.style.width = '100%'
-        return
-      }
-
-      this.$refs.rightpanel.style.transition = "width 0.2s ease-in-out"
-      this.$refs.rightpanel.style.width = this.$refs.rightpanel.parentElement.offsetWidth / 2 - this.$refs.resizer.getBoundingClientRect().width / 2 + 'px'
-      this.$refs.rightpanel.style.flexGrow = 0
-      setTimeout(() => {
-        this.$refs.rightpanel.style.transition = ""
-      }, 200)
+    centerPanels: function(widthDiff = 0) {
+      let tot = (this.$refs.rightpanel.getBoundingClientRect().width +
+        this.$refs.leftpanel.getBoundingClientRect().width +
+        widthDiff) / 2
+      this.$refs.rightpanel.style.width = tot + 'px'
     },
     maximizeEdit: function() {
-      this.$refs.rightpanel.style.transition = "width 0.2s ease-in-out"
       this.$refs.rightpanel.style.width = '0%'
-      this.$refs.rightpanel.style.flexGrow = 0
-      setTimeout(() => {
-        this.$refs.rightpanel.style.transition = ""
-      }, 200)
     },
     maximizeRender: function() {
-      this.$refs.rightpanel.style.transition = "width 0.2s ease-in-out"
       this.$refs.rightpanel.style.width = '100%'
-      this.$refs.rightpanel.style.flexGrow = 0
-      setTimeout(() => {
-        this.$refs.rightpanel.style.transition = ""
-      }, 200)
     }
   },
   created() {
@@ -151,6 +136,16 @@ export default {
   beforeDestroy() {
     EventBus.$off('error', this.showErrorSnackbar)
     EventBus.$off('success', this.showSuccessSnackbar)
+  },
+  watch: {
+    miniDrawer: function(oldV, newV) {
+      // 200 px is the difference between mini and extended drawer
+      let diff = 100
+      if (newV)
+        diff = -100
+
+      this.$refs.rightpanel.style.width = this.$refs.rightpanel.getBoundingClientRect().width + diff + 'px'
+    }
   }
 }
 
@@ -165,7 +160,6 @@ function makeResizableDiv(divright, resizer) {
   function resize(e) {
     let relativePos = divright.getBoundingClientRect().right - e.pageX - resizer.getBoundingClientRect().width / 2 + 'px'
     divright.style.width = relativePos
-    divright.style.flexGrow = 0
   }
   function stopResize() {
     window.removeEventListener('mousemove', resize)
@@ -199,14 +193,15 @@ function makeResizableDiv(divright, resizer) {
 }
 
 #resizer:hover::before {
-    width: 6px;
-    border-radius: 6px;
+  width: 6px;
+  border-radius: 6px;
 }
 
 .flex-panel {
   box-sizing: border-box;
   min-width: 480px;
   flex: 1 1 auto;
+  transition: width 0.2s ease-in-out;
 }
 
 </style>

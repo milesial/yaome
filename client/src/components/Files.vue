@@ -1,45 +1,34 @@
  <template>
-   <div @mouseover="mini=false" @mouseleave="mini=true" style="overflow-y:hidden">
     <v-navigation-drawer
-      class="elevation-10"
-      app
-      clipped
+      :mini-variant="miniDrawer"
       permanent
-      :mini-variant="mini && !createMenu"
-      mini-variant-width="50"
-      style="overflow-y: hidden;"
+      app
     >
-      <v-list-item style="position: absolute;" class="my-3 px-1">
-        <v-list-item-avatar large left class="secondary">
-          <v-icon dark>mdi-file-tree</v-icon>
+      <v-list-item class="px-2">
+        <v-list-item-avatar left>
+          <v-icon large>mdi-folder-settings</v-icon>
         </v-list-item-avatar>
-        <v-list-item-content class="py-0 my-0">
-          <v-list-item-title class="title mr-6">
-            Files
-          </v-list-item-title>
-        </v-list-item-content>
-        <v-list-item-action class="py-0 my-0 ml-12">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <div v-on="on">
-                <v-menu
-                  v-model="createMenu"
-                  :close-on-content-click="false"
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-btn v-on="on" icon x-large>
-                      <v-icon>mdi-plus</v-icon>
-                    </v-btn>
-                  </template>
-                  <FilesCreate
-                    :opened="createMenu"
-                    @close="createMenu = false"/>
-                </v-menu>
-              </div>
-            </template>
-            <span>Create a file or directory</span>
-          </v-tooltip>
-        </v-list-item-action>
+        <v-list-item-title class="title">Files</v-list-item-title>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <div v-on="on">
+              <v-menu
+                v-model="createMenu"
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on }">
+                  <v-btn v-on="on" icon large>
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                </template>
+                <FilesCreate
+                  :opened="createMenu"
+                  @close="createMenu = false"/>
+              </v-menu>
+            </div>
+          </template>
+          <span>Create a file or directory</span>
+        </v-tooltip>
       </v-list-item>
       <v-divider></v-divider>
 
@@ -50,20 +39,24 @@
           />
       </v-list-item-content>
     </v-list-item>
-    <v-btn
-      block
-      text
-      tile
-      v-show="!mini || createMenu"
-      absolute
-      style="bottom:0;"
+        <v-flex fill-height>
+    <v-list-item
+      link
+      large
       @click="downloadZip()"
+      style="position:absolute;bottom: 0;width:100%;"
+      class="font-weight-bold"
     >
-      <v-icon class="mr-2">mdi-folder-zip</v-icon>
-      Download as archive
-    </v-btn>
+          <v-list-item-icon>
+            <v-icon>mdi-folder-download</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Download as archive</v-list-item-title>
+          </v-list-item-content>
+    </v-list-item></v-flex>
+
   </v-navigation-drawer>
-</div>
 </template>
 
 <script>
@@ -73,16 +66,18 @@ import store from '../store.js'
 
 export default {
   components: { FilesCreate, FilesTree },
+  props: ['miniDrawer'],
   data: () => ({
     mini: true,
     createMenu: false,
+    menu: false,
     store: store.data
   }),
   methods: {
     downloadZip() {
       window.location.href = '/zip'
     }
-  }
+  },
 }
 
 </script>

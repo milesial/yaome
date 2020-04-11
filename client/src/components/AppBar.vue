@@ -4,16 +4,15 @@
       app
       color="primary darken-2"
       dark
-      clipped-left
       short
       class="pr-0"
     >
-      <v-app-bar-nav-icon @click="$emit('drawer')">
-        <v-icon>mdi-menu</v-icon>
-      </v-app-bar-nav-icon>
+        <v-app-bar-nav-icon @click.stop="$emit('drawer')">
+        </v-app-bar-nav-icon>
+
       <v-toolbar-title>Yaome</v-toolbar-title>
       <v-spacer></v-spacer>
-      <div class="d-none d-sm-flex" style="position:absolute;left:50%;transform:translateX(-50%);padding-left:50px;">
+      <div class="d-none d-sm-flex" style="position:absolute;left:50%;transform:translateX(-50%);">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn
@@ -118,9 +117,10 @@ import Login from './Login'
 
 export default {
   components: { Login },
+  props: ['miniDrawer'],
   data: () => ({
     store: store.data,
-    loginDialog: false
+    loginDialog: false,
   }),
   methods: {
     onLogin: function(name) {
