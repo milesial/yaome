@@ -7,6 +7,8 @@
     style="overflow: hidden;"
   >
       <v-toolbar flat dense>
+        <v-breadcrumbs large :items="breadcrumbs"></v-breadcrumbs>
+        <v-spacer></v-spacer>
         <v-menu
           v-if="topOptions"
           v-model="optionsMenu"
@@ -15,10 +17,9 @@
         >
           <template v-slot:activator="{ on }">
             <v-btn
-              text
-              large
               rounded
               v-on="on"
+              text
             >
               <v-icon class="mr-2">mdi-tune</v-icon>
               Settings
@@ -27,6 +28,7 @@
           <EditPanelOptions :options="options"/>
         </v-menu>
       </v-toolbar>
+      <v-divider></v-divider>
     <v-container fill-height class="pa-0 ma-0" id="editor"></v-container>
   </v-layout>
 </template>
@@ -82,6 +84,14 @@ export default {
     onResize() {
       if (this.editor)
         this.editor.layout()
+    }
+  },
+  computed: {
+    breadcrumbs: function() {
+      return this.store.files.selected.split('/').map(x => ({
+        text: x,
+        disabled: false,
+      }))
     }
   }
 }

@@ -2,7 +2,6 @@
   <v-app
   >
     <AppBar
-      :miniDrawer="miniDrawer"
       @success="showSuccessSnackbar"
       @centerPanels="centerPanels"
       @maxEdit="maximizeEdit"

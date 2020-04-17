@@ -5,9 +5,10 @@
       color="primary darken-2"
       dark
       short
-      class="pr-0"
-    >
-        <v-app-bar-nav-icon @click.stop="$emit('drawer')">
+        class="pr-0">
+        <v-app-bar-nav-icon @click.stop="drawerPerm = !drawerPerm">
+            <v-icon v-if="!drawerPerm">mdi-menu-open</v-icon>
+            <v-icon v-else>menu</v-icon>
         </v-app-bar-nav-icon>
 
       <v-toolbar-title>Yaome</v-toolbar-title>
@@ -117,14 +118,19 @@ import Login from './Login'
 
 export default {
   components: { Login },
-  props: ['miniDrawer'],
   data: () => ({
     store: store.data,
     loginDialog: false,
+    drawerPerm: false,
   }),
   methods: {
     onLogin: function(name) {
       this.$emit('success', `Hello ${name} !`)
+    }
+  },
+  watch: {
+    drawerPerm: function() {
+        this.$emit('drawer')
     }
   }
 }

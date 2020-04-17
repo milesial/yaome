@@ -9,7 +9,7 @@
     >
       <v-list-item class="px-2">
         <v-list-item-avatar left>
-          <v-icon large>mdi-folder-settings</v-icon>
+            <v-icon large :color="mini ? '': 'primary'">mdi-folder-settings</v-icon>
         </v-list-item-avatar>
         <v-list-item-title class="title">Files</v-list-item-title>
         <v-tooltip bottom>
@@ -35,7 +35,7 @@
       </v-list-item>
       <v-divider></v-divider>
 
-      <v-list-item class="mt-12 pt-4 mx-2 px-0">
+      <v-list-item class="mt-2 pt-2 mx-2 px-0">
         <v-list-item-content>
           <FilesTree
             :extended="!mini"
@@ -84,7 +84,7 @@ export default {
   },
   computed: {
     mini: function() {
-      return this.miniDrawer && !this.drawerHover
+      return this.miniDrawer && !this.drawerHover && !this.createMenu
     }
   },
 
