@@ -9,7 +9,7 @@
       @maxRender="maximizeRender"
       @drawer="miniDrawer = !miniDrawer"
     />
-    <Files :miniDrawer="miniDrawer"/>
+    <Files :miniDrawer="miniDrawer" @drawerChange="updatePanelsAfterDrawer"/>
     <v-content>
       <v-container grid-list-md fill-height style="max-width:100%;">
         <v-layout
@@ -120,14 +120,26 @@ export default {
       let tot = (this.$refs.rightpanel.getBoundingClientRect().width +
         this.$refs.leftpanel.getBoundingClientRect().width +
         widthDiff) / 2
+      this.$refs.rightpanel.style.transition = 'width 0.2s ease-in-out'
       this.$refs.rightpanel.style.width = tot + 'px'
     },
     maximizeEdit: function() {
+      this.$refs.rightpanel.style.transition = 'width 0.2s ease-in-out'
       this.$refs.rightpanel.style.width = '0%'
     },
     maximizeRender: function() {
+      this.$refs.rightpanel.style.transition = 'width 0.2s ease-in-out'
       this.$refs.rightpanel.style.width = '100%'
+    },
+    updatePanelsAfterDrawer: function(newV) {
+      // 200 px is the difference between mini and extended drawer
+      let diff = 100
+      if (newV)
+        diff = -100
+
+      this.$refs.rightpanel.style.width = this.$refs.rightpanel.getBoundingClientRect().width + diff + 'px'
     }
+
   },
   created() {
     EventBus.$on('error', this.showErrorSnackbar)
@@ -137,20 +149,11 @@ export default {
     EventBus.$off('error', this.showErrorSnackbar)
     EventBus.$off('success', this.showSuccessSnackbar)
   },
-  watch: {
-    miniDrawer: function(oldV, newV) {
-      // 200 px is the difference between mini and extended drawer
-      let diff = 100
-      if (newV)
-        diff = -100
-
-      this.$refs.rightpanel.style.width = this.$refs.rightpanel.getBoundingClientRect().width + diff + 'px'
-    }
-  }
 }
 
 function makeResizableDiv(divright, resizer) {
   resizer.addEventListener('mousedown', function(e) {
+    divright.style.transition = ''
     e.preventDefault()
     divright.style.transition = ""
     window.addEventListener('mousemove', resize)
@@ -163,6 +166,7 @@ function makeResizableDiv(divright, resizer) {
   }
   function stopResize() {
     window.removeEventListener('mousemove', resize)
+    divright.style.transition = 'width 0.2s ease-in-out'
   }
 }
 </script>
@@ -201,7 +205,6 @@ function makeResizableDiv(divright, resizer) {
   box-sizing: border-box;
   min-width: 480px;
   flex: 1 1 auto;
-  transition: width 0.2s ease-in-out;
 }
 
 </style>

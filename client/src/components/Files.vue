@@ -1,6 +1,9 @@
  <template>
+<div 
+  @mouseover="drawerHover=true"
+  @mouseleave="drawerHover=false">
     <v-navigation-drawer
-      :mini-variant="miniDrawer"
+      :mini-variant="mini"
       permanent
       app
     >
@@ -35,16 +38,16 @@
       <v-list-item class="mt-12 pt-4 mx-2 px-0">
         <v-list-item-content>
           <FilesTree
-            :extended="!mini || createMenu"
+            :extended="!mini"
           />
       </v-list-item-content>
     </v-list-item>
-        <v-flex fill-height>
+
+      <div style="position: absolute; bottom: 0; width: 100%;">
+        <v-divider></v-divider>
     <v-list-item
       link
-      large
       @click="downloadZip()"
-      style="position:absolute;bottom: 0;width:100%;"
       class="font-weight-bold"
     >
           <v-list-item-icon>
@@ -54,9 +57,10 @@
           <v-list-item-content>
             <v-list-item-title>Download as archive</v-list-item-title>
           </v-list-item-content>
-    </v-list-item></v-flex>
+    </v-list-item>
+      </div>
 
-  </v-navigation-drawer>
+    </v-navigation-drawer></div>
 </template>
 
 <script>
@@ -68,16 +72,27 @@ export default {
   components: { FilesCreate, FilesTree },
   props: ['miniDrawer'],
   data: () => ({
-    mini: true,
     createMenu: false,
     menu: false,
-    store: store.data
+    store: store.data,
+    drawerHover: false
   }),
   methods: {
     downloadZip() {
       window.location.href = '/zip'
     }
   },
+  computed: {
+    mini: function() {
+      return this.miniDrawer && !this.drawerHover
+    }
+  },
+
+  watch: {
+    mini: function(oldV, newV) {
+      this.$emit('drawerChange', newV)
+    }
+  }
 }
 
 </script>
