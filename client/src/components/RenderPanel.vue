@@ -70,7 +70,7 @@
             @change="updateManual"
             right
           >
-              <v-tab v-for="f in store.availableFormats" :key="f" :disabled="markdownIsEmpty" class="px-5">
+              <v-tab v-for="f in renderer.availableFormats" :key="f" :disabled="markdownIsEmpty" class="px-5">
                 <v-icon v-if="f=='pdf'" class="mr-3">mdi-adobe-acrobat</v-icon>
                 <v-icon v-if="f=='html'" class="mr-3">mdi-language-html5</v-icon>
                 {{ f }}
@@ -112,12 +112,12 @@
 
 <script>
 import store from '../store.js';
-import { requestRender, updateCurrentRender } from '../utils.js'
 import RenderPanelPdf from './RenderPanelPdf.vue'
 import RenderPanelHtml from './RenderPanelHtml.vue'
 import EmptyRender from './EmptyRender.vue'
 import { Scroll } from 'vuetify/lib/directives'
 import _ from 'lodash'
+import { RemoteRenderer } from '../renderer.js'
 
 export default {
   components: { RenderPanelPdf, RenderPanelHtml, EmptyRender },
@@ -128,6 +128,7 @@ export default {
     renderingSmoothed: false, // rendering boolean without short spikes
     pdfLoading: false,
     usePandoc: true,
+    renderer: new RemoteRenderer()
   }),
   created: function() {
     this.update = _.debounce(this.update, 200)
@@ -163,13 +164,16 @@ export default {
     },
     'store.markdown': function() {
       this.update()
+    },
+    'store.selectedFormatId': function(value) {
+      this.renderer.format = this.renderer.availableFormats[value]
     }
   },
   methods: {
     download() {
       this.preparingDL = true
-      requestRender(this.store.markdown, this.selectedFormat,
-        { download: true }, (res) => {
+      this.renderer.render({ download: true })
+        .then((res) => {
           let a = document.getElementById('dl-hidden-link')
           let blob = new Blob([res])
           a.href = window.URL.createObjectURL(blob)
@@ -179,13 +183,14 @@ export default {
         })
     },
     update() {
-      updateCurrentRender({}, () => {
-        if (this.selectedFormat == 'html') {
-          this.$nextTick(() => {
-            this.$refs.html.processMath()
-          })
-        }
-      })
+      this.renderer.render()
+        .then(() => {
+          if (this.renderer.format == 'html') {
+            this.$nextTick(() => {
+              this.$refs.html.processMath()
+            })
+          }
+        })
     },
     updateManual() {
       this.renderingSmoothed = true
@@ -193,7 +198,7 @@ export default {
       this.update()
     },
     onScroll(e) {
-      if (this.selectedFormat == 'pdf')
+      if (this.renderer.format == 'pdf')
         this.$refs.pdf.updatePagination(e)
     },
   }
