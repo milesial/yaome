@@ -117,7 +117,7 @@ import RenderPanelHtml from './RenderPanelHtml.vue'
 import EmptyRender from './EmptyRender.vue'
 import { Scroll } from 'vuetify/lib/directives'
 import _ from 'lodash'
-import { RemoteRenderer } from '../renderer.js'
+import { RemoteRenderer } from '../utils/renderer.js'
 
 export default {
   components: { RenderPanelPdf, RenderPanelHtml, EmptyRender },

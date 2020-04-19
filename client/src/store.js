@@ -1,4 +1,4 @@
-import { getCookie } from './utils.js'
+import { getCookie } from './utils/cookies.js'
 import axios from 'axios'
 
 var store = {
