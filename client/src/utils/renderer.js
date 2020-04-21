@@ -1,11 +1,12 @@
 import store from '../store.js'
+import marked from 'marked'
 
 class Renderer {
   constructor(format) {
-    this.availableFormats = ['html', 'pdf']
-    this._format = this.availableFormats[0]
     if (format !== undefined) {
-      this.format = format
+      this._format = format
+    } else {
+      this._format = this.availableFormats[0]
     }
   }
 
@@ -24,6 +25,12 @@ class Renderer {
 
 
 class RemoteRenderer extends Renderer {
+  constructor() {
+    let availableFormats = ['html', 'pdf']
+    super(availableFormats[0])
+    this.availableFormats = availableFormats
+  }
+
   render(options={}) {
     let content = store.data.markdown
     let self = this
@@ -53,4 +60,24 @@ class RemoteRenderer extends Renderer {
   }
 }
 
-export { RemoteRenderer }
+class MarkedRenderer extends Renderer {
+  constructor() {
+    let availableFormats = ['html']
+    super(availableFormats[0])
+    this.availableFormats = availableFormats
+  }
+
+  render() {
+    let content = store.data.markdown
+    let self = this
+    return new Promise(
+      function (resolve) {
+        let res = marked(content)
+        store.data.render[self.format] = res
+        resolve(res)
+      }
+    )
+  }
+}
+
+export { RemoteRenderer, MarkedRenderer }

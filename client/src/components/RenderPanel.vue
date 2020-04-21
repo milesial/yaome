@@ -117,7 +117,7 @@ import RenderPanelHtml from './RenderPanelHtml.vue'
 import EmptyRender from './EmptyRender.vue'
 import { Scroll } from 'vuetify/lib/directives'
 import _ from 'lodash'
-import { RemoteRenderer } from '../utils/renderer.js'
+import { RemoteRenderer, MarkedRenderer } from '../utils/renderer.js'
 
 export default {
   components: { RenderPanelPdf, RenderPanelHtml, EmptyRender },
@@ -152,6 +152,13 @@ export default {
     }
   },
   watch: {
+    'usePandoc': function(v) {
+      if (v) 
+        this.renderer = new RemoteRenderer()
+      else
+        this.renderer = new MarkedRenderer()
+      this.update()
+    },
     'store.rendering': function(value) {
       if (!value) {
         this.renderingSmoothed = false
