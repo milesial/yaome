@@ -72,8 +72,10 @@ class MarkedRenderer extends Renderer {
     let self = this
     return new Promise(
       function (resolve) {
+        store.data.rendering = true
         let res = marked(content)
         store.data.render[self.format] = res
+        store.data.rendering = false
         resolve(res)
       }
     )
