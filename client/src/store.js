@@ -3,6 +3,7 @@ import axios from 'axios'
 
 var store = {
   data: {
+    serverStatus: true,
     availableFormats: ['html', 'pdf'],
     selectedFormatId: 0,
     render: { html: '', pdf: '' },

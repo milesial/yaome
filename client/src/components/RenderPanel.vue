@@ -10,10 +10,11 @@
     <v-flex shrink class="pa-0">
       <v-toolbar flat dense>
         <v-container fill-height fluid>
+          <v-row>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <div v-on="on">
-                <v-switch v-model="usePandoc" color="primary">
+                <v-switch v-model="usePandoc" color="primary" :disabled="!store.serverStatus">
                   <template v-slot:label>
                     <v-icon :color="usePandoc ? 'primary' : ''">mdi-cloud-upload</v-icon>
                   </template>
@@ -22,6 +23,8 @@
             </template>
             <span><strong>{{ usePandoc ? 'Disable' : 'Enable' }} server-side rendering.</strong> <br>Server-side rendering is slower<br> but has all the Pandoc features.</span>
           </v-tooltip>
+          <ServerStatus/>
+          </v-row>
         </v-container>
         <v-spacer></v-spacer>
         <!-- download button -->
@@ -115,12 +118,13 @@ import store from '../store.js';
 import RenderPanelPdf from './RenderPanelPdf.vue'
 import RenderPanelHtml from './RenderPanelHtml.vue'
 import EmptyRender from './EmptyRender.vue'
+import ServerStatus from './ServerStatus.vue'
 import { Scroll } from 'vuetify/lib/directives'
 import _ from 'lodash'
 import { RemoteRenderer, MarkedRenderer } from '../utils/renderer.js'
 
 export default {
-  components: { RenderPanelPdf, RenderPanelHtml, EmptyRender },
+  components: { RenderPanelPdf, RenderPanelHtml, EmptyRender, ServerStatus },
   directives: { Scroll },
   data : () => ({
     store: store.data,
@@ -174,6 +178,9 @@ export default {
     },
     'store.selectedFormatId': function(value) {
       this.renderer.format = this.renderer.availableFormats[value]
+    },
+    'store.serverStatus': function(value) {
+      this.usePandoc = value
     }
   },
   methods: {

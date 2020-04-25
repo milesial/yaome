@@ -202,6 +202,16 @@ router.post('/login', login)
 router.post('/register', register)
 router.get('/logout', logout)
 
+// ping
+router.get('/status', (req, res, next) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+  res.set('Pragma', 'no-cache')
+  res.set('Expires', '0')
+
+  res.send()
+  next()
+})
+
 // error handling
 router.use((err, req, res, next) => {
   console.log(err)

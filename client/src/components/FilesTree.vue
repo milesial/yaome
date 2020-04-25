@@ -98,11 +98,6 @@ export default {
     },
     openDirs: []
   }),
-  computer: {
-    openDirs() {
-
-    }
-  },
   watch: {
     activeFiles(newV, oldV) {
       if (newV.length == 0)
