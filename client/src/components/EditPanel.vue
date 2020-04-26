@@ -25,7 +25,7 @@
               Settings
             </v-btn>
           </template>
-          <EditPanelOptions :options="options"/>
+          <EditPanelOptions :editor="editor"/>
         </v-menu>
       </v-toolbar>
       <v-divider></v-divider>
@@ -47,12 +47,6 @@ export default {
     store: store.data,
     textStyle: undefined,
     optionsMenu: false,
-    options: {
-      theme: 'easymde',
-      keymap: 'default',
-      showLines: true,
-      styleLine: true
-    },
     topOptions: true,
     editor: null
 

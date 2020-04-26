@@ -29,21 +29,6 @@
           ></v-select>
         </v-list-item>
         <v-list-item dense>
-          <v-radio-group
-            prepend-icon="mdi-keyboard-outline"
-            label="Key map"
-            v-model="options.keymap">
-            <v-radio
-              color="primary"
-              v-for="k in keymaps"
-              :key="k"
-              :label="k"
-              :value="k"
-            ></v-radio>
-          </v-radio-group>
-        </v-list-item>
-
-        <v-list-item dense>
           <v-switch
             color="primary"
             prepend-icon="mdi-format-list-numbered"
@@ -51,54 +36,32 @@
             label="Show line numbers"
           ></v-switch>
         </v-list-item>
-        <v-list-item dense>
-            <v-switch
-            color="primary"
-            prepend-icon="mdi-cursor-text"
-              v-model="options.styleLine"
-              label="Style active line"
-            ></v-switch>
-        </v-list-item>
       </v-list>
-    </v-card>
+  </v-card>
 
 </template>
 
 <script>
 
-function requireAll(r) {
-  let l = []
-  r.keys().forEach(k => {
-    l.push(k.slice(2).split('.')[0])
-    r(k)
-  })
-  return l
-}
-
-let themes = ['easymde', ...requireAll(require.context('../../../node_modules/codemirror/theme', true, /\.css$/))]
-let keymaps = ['default', ...requireAll(require.context('../../../node_modules/codemirror/keymap', true, /\.js$/))]
-
+import * as monaco from 'monaco-editor'
+let themes = ['vs', 'vs-dark', 'hc-black']
 
 export default {
-  props: ['options', 'easyMDE'],
+  props: ['editor'],
   data: () => ({
     themes,
-    keymaps,
+    options: {
+      theme: 'vs',
+      showLines: true,
+    }
   }),
   watch: {
     'options.theme': function(v) {
-      this.easyMDE.codemirror.setOption('theme', 'easymde ' + v)
-    },
-    'options.keymap': function(v) {
-      this.easyMDE.codemirror.setOption('keyMap', v)
+      monaco.editor.setTheme(v)
     },
     'options.showLines': function(v) {
-      this.easyMDE.codemirror.setOption('lineNumbers', v)
-    },
-    'options.styleLine': function(v) {
-      this.easyMDE.codemirror.setOption("styleActiveLine", v)
+      this.editor.updateOptions({ lineNumbers: v ? "on" : "off" })
     }
-
   }
 }
 </script>
