@@ -130,6 +130,20 @@ router.post('/render/:output', (req, res, next) => {
   child.stdin.end(md)
 })
 
+router.get('/files/:path', (req, res, next) => {
+  pathExists(req.session.id, req.params.path)
+    .then(exists => {
+      if (!exists)
+        throw 'Path does not exist'
+
+      fs.readFile(getPath(req.session.id, req.params.path), (err, data) => {
+        if (err)
+          throw err
+
+        res.set('content-type', 'test/plain').send(data)
+      })
+    })
+})
 // get the user's files in a tree structure (json)
 router.get('/files', (req, res, next) => {
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
