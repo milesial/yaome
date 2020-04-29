@@ -55,7 +55,7 @@ export default {
     let that = this
     setTimeout(() => {
       that.editor = monaco.editor.create(document.getElementById("editor"), {
-        value: that.store.markdown,
+        value: that.store.files.content,
         language: 'markdown',
         minimap: {enabled: false},
         showFoldingControls: 'always',
@@ -70,7 +70,7 @@ export default {
     
       let model = that.editor.getModel()
       model.onDidChangeContent(() => {
-        that.store.markdown = model.getValue()
+        that.store.files.content = model.getValue()
       })
     }, 0)
   },

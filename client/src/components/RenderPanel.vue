@@ -139,7 +139,7 @@ export default {
   },
   computed: {
     progressColor: function() {
-      if(this.store.markdown == this.store.renderedMarkdown && !this.store.rendering) {
+      if(this.store.files.content == this.store.renderedMarkdown && !this.store.rendering) {
         return "success"
       } else {
         return "primary"
@@ -152,7 +152,7 @@ export default {
       return this.store.availableFormats[this.store.selectedFormatId]
     },
     markdownIsEmpty: function() {
-      return this.store.markdown.trim() == ''
+      return this.store.files.content.trim() == ''
     }
   },
   watch: {
@@ -173,7 +173,7 @@ export default {
         }, 400)
       }
     },
-    'store.markdown': function() {
+    'store.files.content': function() {
       this.update()
     },
     'store.selectedFormatId': function(value) {

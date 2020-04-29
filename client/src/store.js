@@ -1,5 +1,5 @@
 import { getCookie } from './utils/cookies.js'
-import axios from 'axios'
+import { FilesManager } from './utils/files.js'
 
 var store = {
   data: {
@@ -10,21 +10,10 @@ var store = {
     rendering: false,
     markdown: '',
     renderedMarkdown: '',
-    files: {
-      selected: 'main.md',
-      tree: {}
-    },
+    files: new FilesManager(),
     logged: getCookie('logged') == 'true',
     name: decodeURIComponent(getCookie('name')).split(/\s+/)[0]
   },
-  updateFilesTree() {
-    axios.get('/files')
-      .then(res => {
-        this.data.files.tree = res.data
-      })
-  }
 }
-
-store.updateFilesTree()
 
 export default store;

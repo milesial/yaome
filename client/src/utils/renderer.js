@@ -32,7 +32,7 @@ class RemoteRenderer extends Renderer {
   }
 
   render(options={}) {
-    let content = store.data.markdown
+    let content = store.data.files.content
     let self = this
     return new Promise(
       function (resolve, reject) {
@@ -68,7 +68,7 @@ class MarkedRenderer extends Renderer {
   }
 
   render() {
-    let content = store.data.markdown
+    let content = store.data.mrkdown
     let self = this
     return new Promise(
       function (resolve) {

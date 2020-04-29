@@ -74,7 +74,6 @@
 
 <script>
 import store from '../store.js'
-import axios from 'axios'  
 import EventBus from '../event-bus.js'
 
 export default {
@@ -104,6 +103,7 @@ export default {
         this.$nextTick(() => this.activeFiles = oldV)
       else {
         this.store.files.selected = newV[0]
+        this.store.files.updateContent()
       }
     }
   },
@@ -113,9 +113,7 @@ export default {
       this.deleteDialog.show = true
     },
     remove(item) {
-      axios.delete('/files', {
-        params: { path: item.path }
-      })
+      store.files.remove(item.path)
         .then(() => {
           store.updateFilesTree()
           if (item.type == 'file')
@@ -125,7 +123,9 @@ export default {
         })
         .catch(err => EventBus.$emit('error', err))
     }
-
+  },
+  mounted() {
+  
   }
 }
 
