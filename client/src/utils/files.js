@@ -27,7 +27,7 @@ class FilesManager {
   }
 
   updateContent() {
-    this.get(this.selected).then((data) => { this.content = data.data })
+    return this.get(this.selected).then((data) => { this.content = data.data })
   }
 }
 

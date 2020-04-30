@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     onResize() {
-      if (this.editor)
+      if (this.editor) 
         this.editor.layout()
     }
   },
@@ -86,6 +86,12 @@ export default {
         text: x,
         disabled: false,
       }))
+    }
+  },
+  watch: {
+    'store.files.selected': function() {
+      this.store.files.updateContent()
+        .then(() => { this.editor.getModel().setValue(this.store.files.content) })
     }
   }
 }
