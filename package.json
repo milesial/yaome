@@ -6,7 +6,11 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "start": "vue-cli-service serve"
+    "start": "vue-cli-service serve --mode production"
+  },
+  "engines": {
+    "node": "^4.0.0",
+    "npm": "^3.0.0"
   },
   "dependencies": {
     "@mdi/font": "^5.0.45",
@@ -34,7 +38,8 @@
     "vue": "^2.6.11",
     "vue-pdf": "^4.0.8",
     "vue-resize-directive": "^1.2.0",
-    "vuetify": "^2.2.21"
+    "vuetify": "^2.2.21",
+    "webpack": "^4.43.0"
   },
   "devDependencies": {
     "@mdi/js": "^5.0.45",
