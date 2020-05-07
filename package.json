@@ -9,8 +9,8 @@
     "start": "vue-cli-service serve --mode production"
   },
   "engines": {
-    "node": "^4.0.0",
-    "npm": "^3.0.0"
+    "node": "^10.20.0",
+    "npm": "^6.14.0"
   },
   "dependencies": {
     "@mdi/font": "^5.0.45",
