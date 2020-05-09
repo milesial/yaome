@@ -12,7 +12,7 @@ module.exports = {
   },
   devServer: {
     before: configureAPI,
-    hot: true,
+    hot: process.env.development,
     port: 8080
   },
   outputDir: 'client/dist',
