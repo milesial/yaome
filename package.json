@@ -38,9 +38,7 @@
     "vue": "^2.6.11",
     "vue-pdf": "^4.0.8",
     "vue-resize-directive": "^1.2.0",
-    "vuetify": "^2.2.28",
-    "webpack": "^4.43.0",
-    "webpack-dev-server": "^3.11.0"
+    "vuetify": "^2.2.28"
   },
   "devDependencies": {
     "@mdi/js": "^5.2.45",
