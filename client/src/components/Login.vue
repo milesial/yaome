@@ -161,8 +161,9 @@
 </template>
 
 <script>
-import store from '../store.js'
+import store from '../store'
 import LoginSocial from './LoginSocial'
+
 export default {
   props: ['opened'],
   components: { LoginSocial },
@@ -215,7 +216,7 @@ export default {
         this.loading = true
         let vm = this
         var xhr = new XMLHttpRequest()
-        xhr.open('POST', '/' + this.window, true)
+        xhr.open('POST', `${process.env.VUE_APP_BACK_URL}/${this.window}`, true)
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8')
         xhr.onreadystatechange = function() {
           vm.loading = false

@@ -98,8 +98,8 @@
 
 <script>
 import axios from 'axios'  
-import store from '../store.js'
-import EventBus from '../event-bus.js'
+import store from '../store'
+import EventBus from '../event-bus'
 
 export default {
   props: ['opened'],
@@ -134,7 +134,7 @@ export default {
   },
   methods: {
     create() {
-      axios.post('/files', {
+      axios.post(`${process.env.VUE_APP_BACK_URL}/files`, {
         type: this.type,
 	path: this.path
       })

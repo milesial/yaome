@@ -21,7 +21,8 @@ export default {
   }),
   mounted: function() {
     setInterval(() => {
-      axios.get('/status')
+      console.log(process.env.VUE_APP_BACK_URL)
+      axios.get(`${process.env.VUE_APP_BACK_URL}/status`)
         .then(() => {
           this.store.serverStatus = true
         })

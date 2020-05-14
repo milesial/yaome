@@ -2,7 +2,7 @@
   <div>
     <!-- Social logins -->
     <v-btn 
-      href="/oauth?provider=github"
+      :href="`${process.env.VUE_APP_BACK_URL}/oauth?provider=github`"
       @click="loadingGithub = true"
       :loading="loadingGithub"
       class="my-1 provider-btn no-uppercase title"
@@ -14,7 +14,7 @@
       color="#161614"
     >Github<img height="36" width="36" class="notranslate provider-logo" src="@/assets/github.svg"/></v-btn>
     <v-btn 
-      href="/oauth?provider=google"
+      :href="`${process.env.VUE_APP_BACK_URL}/oauth?provider=google`"
       @click="loadingGoogle = true"
       :loading="loadingGoogle"
       class="my-1 provider-btn no-uppercase title"
@@ -26,7 +26,7 @@
       color="#757575"
     >Google<img height="36" width="36" class="notranslate provider-logo" src="@/assets/google.svg"/></v-btn>
     <v-btn 
-      href="/oauth?provider=facebook"
+      :href="`${process.env.VUE_APP_BACK_URL}/oauth?provider=facebook`"
       @click="loadingFacebook = true"
       :loading="loadingFacebook"
       class="my-1 provider-btn no-uppercase title"
@@ -38,7 +38,7 @@
       color="#3c5a99"
     >Facebook<img height="36" width="36" class="notranslate provider-logo" src="@/assets/facebook.svg"/></v-btn>
     <v-btn 
-      href="/oauth?provider=gitlab"
+      :href="`${process.env.VUE_APP_BACK_URL}/oauth?provider=gitlab`"
       @click="loadingGitlab = true"
       :loading="loadingGitlab"
       class="my-1 provider-btn no-uppercase title"

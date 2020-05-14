@@ -35,7 +35,7 @@
 
 <script>
 import resize from 'vue-resize-directive'
-import store from '../store.js'
+import store from '../store'
 import EditPanelOptions from './EditPanelOptions'
 
 import * as monaco from 'monaco-editor'

@@ -50,8 +50,8 @@ import AppBar from './components/AppBar'
 import Files from './components/Files'
 import RenderPanel from './components/RenderPanel'
 import EditPanel from './components/EditPanel'
-import store from './store.js'
-import EventBus from './event-bus.js'
+import store from './store'
+import EventBus from './event-bus'
 import axios from 'axios'
 
 axios.interceptors.response.use(res => res, err => {

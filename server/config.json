@@ -6,8 +6,8 @@
     "user": "postgres",
     "pass": "redacted"
   },
-  "port": 80,
-  "secret": "redacted",
+  "port": 1024,
+  "secret": "e1eb764d0c7450b5e685af875e2d840d81f3939d2cc6777c5ab2b0ff45574067",
   "oauth": {
     "github": {
       "secret": "redacted",

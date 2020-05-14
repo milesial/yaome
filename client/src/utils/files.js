@@ -3,27 +3,30 @@ import axios from 'axios'
 class FilesManager {
   constructor() {
     this.tree = {children: []}
-    this.selected = 'main.md'
+    this.selected = ''
     this.content = ''
-    this.updateTree()
-    this.updateContent()
+    this.updateTree().then(() => { 
+      this.selected = this.tree.children[0].path
+      console.log(this.selected)
+      this.updateContent()
+    })
   }
 
   updateTree() {
-    return axios.get('/files')
+    return axios.get(`${process.env.VUE_APP_BACK_URL}/files`)
       .then(res => {
         this.tree = res.data
       })
   }
 
   remove(path) {
-    return axios.delete('/files', {
+    return axios.delete(`${process.env.VUE_APP_BACK_URL}/files`, {
       params: { path: path }
     }).then(() => { this.updateTree() })
   }
 
   get(path) {
-    return axios.get('/files/' + path)
+    return axios.get(`${process.env.VUE_APP_BACK_URL}/files/${path}`)
   }
 
   updateContent() {

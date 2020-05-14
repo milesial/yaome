@@ -1,9 +1,9 @@
 
 <script>
-import store from '../store.js'
+import store from '../store'
 import renderMathInElement from 'katex/dist/contrib/auto-render.mjs'
 import 'katex/dist/katex.min.css'
-import EventBus from '../event-bus.js'
+import EventBus from '../event-bus'
 
 export default {
   props: ['useKatex'],

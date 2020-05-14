@@ -1,4 +1,4 @@
-import store from '../store.js'
+import store from '../store'
 import marked from 'marked'
 
 class Renderer {
@@ -50,7 +50,7 @@ class RemoteRenderer extends Renderer {
           }
         }
 
-        xhttp.open('POST', `/render/${self.format}`, true)
+        xhttp.open('POST', `${process.env.VUE_APP_BACK_URL}/render/${self.format}`, true)
         xhttp.setRequestHeader('Content-type', 'application/json')
         options.file = store.data.files.selected
         options.markdown = content

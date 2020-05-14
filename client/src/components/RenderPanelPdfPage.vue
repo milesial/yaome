@@ -11,10 +11,10 @@
 </template>
 
 <script>
-import * as PDFJSViewer from 'pdfjs-dist/web/pdf_viewer.js'
+import * as PDFJSViewer from 'pdfjs-dist/web/pdf_viewer'
 import 'pdfjs-dist/web/pdf_viewer.css'
 import resize from 'vue-resize-directive'
-import EventBus from '../event-bus.js'
+import EventBus from '../event-bus'
 
 export default {
   directives: { resize },

@@ -2,12 +2,13 @@ const express = require('express')
 const sessions = require('client-sessions')
 const { spawn } = require('child_process')
 const options = require('./options')
-const { initUser, registerUser, deleteUser } = require('./user-utils.js')
-const { getPath, getFileHierarchy, pathExists, createFile, importFile, createDirectory, deleteFileOrDir } = require('./files.js')
-const oauth = require('./auth/oauth.js')
-const login = require('./auth/login.js')
-const register = require('./auth/register.js')
-const logout = require('./auth/logout.js')
+const { initUser, registerUser, deleteUser } = require('./user-utils')
+const { getPath, getFileHierarchy, pathExists, createFile, importFile, createDirectory, deleteFileOrDir } = require('./files')
+const oauth = require('./auth/oauth')
+const login = require('./auth/login')
+const register = require('./auth/register')
+const logout = require('./auth/logout')
+const logger = require('./logger')
 const path = require('path')
 const multer = require('multer')
 const archiver = require('archiver')
@@ -15,12 +16,13 @@ const fs = require('fs')
 
 let router = express.Router()
 
-router.use(sessions({
+let middleware = sessions({
   cookieName: 'session',
   secret: options.secret,
   duration: 7 * 24 * 60 * 60 * 1000,
   activeDuration: 1000 * 60 * 5
-}))
+})
+router.use(middleware)
 
 // creation of a new user (visitor) if needed
 router.use((req, res, next) => {
@@ -31,7 +33,7 @@ router.use((req, res, next) => {
   res.set('X-Seen-You', 'false')
   initUser()
     .then(id => {
-      console.log('Created new user', id)
+      logger.info(`Created new user ${id}`)
       req.session.id = id
       next()
     })
@@ -41,7 +43,7 @@ router.use((req, res, next) => {
 router.post('/user', express.urlencoded({ extended: false }), function(req, res, next) {
   registerUser(req.session.id, req.body.username, req.body.password)
     .then(() => {
-      console.log('Registered user', req.body.username)
+      logger.info(`Registered user ${req.body.username}`)
       next()
     })
 })
@@ -50,7 +52,7 @@ router.post('/user', express.urlencoded({ extended: false }), function(req, res,
 router.delete('/user', function(req, res, next) {
   deleteUser(req.session.id)
     .then(() => {
-      console.log('Deleted user', req.session.id)
+      logger.info(`Deleted user ${req.session.id}`)
       delete req.session.id
       next()
     })
@@ -223,12 +225,11 @@ router.get('/status', (req, res, next) => {
   res.set('Expires', '0')
 
   res.send()
-  next()
 })
 
 // error handling
 router.use((err, req, res, next) => {
-  console.log(err)
+  logger.error(err.toString())
   next(err)
 })
 

@@ -1,5 +1,5 @@
-import { getCookie } from './utils/cookies.js'
-import { FilesManager } from './utils/files.js'
+import { getCookie } from './utils/cookies'
+import { FilesManager } from './utils/files'
 
 var store = {
   data: {

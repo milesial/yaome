@@ -56,7 +56,7 @@ function getOAuthToken(code, state, provider) {
           code,
           state,
           grant_type: 'authorization_code',
-          redirect_uri: `http://localhost:8080/oauth?provider=${provider}`
+          redirect_uri: `${options.FRONT_URL}/oauth?provider=${provider}`
         }
       }, (err, res, body) => {
         if (err || res.statusCode != 200)
@@ -72,7 +72,7 @@ function checkOAuth(req, res, next) {
   
   res.cookie('logged', 'true')
   res.cookie('name', req.oauth.name)
-    res.redirect('http://localhost:8080');
+    res.redirect(options.FRONT_URL);
 }
 
 async function OAuthRedirect(req, res, next) {
@@ -87,7 +87,7 @@ async function OAuthRedirect(req, res, next) {
   req.session.secret_state = state
 
   let prov = req.query.provider
-  let callback = `http://localhost:8080/oauth?provider=${prov}`
+  let callback = `${options.FRONT_URL}/oauth?provider=${prov}`
   let url = `${endpoints[prov].code_url}?client_id=${options.oauth[prov].id}&redirect_uri=${encodeURIComponent(callback)}&response_type=code&scope=${options.oauth[prov].scope}&state=${state}`
   res.redirect(url)
 }

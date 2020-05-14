@@ -73,8 +73,8 @@
 </template>
 
 <script>
-import store from '../store.js'
-import EventBus from '../event-bus.js'
+import store from '../store'
+import EventBus from '../event-bus'
 
 export default {
   props: ['extended'],

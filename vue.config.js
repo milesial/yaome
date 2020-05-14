@@ -13,7 +13,7 @@ module.exports = {
   devServer: {
     before: configureAPI,
     hot: process.env.development,
-    port: process.env.development?8080:80
+    port: process.env.development ? 8080 : 80
   },
   outputDir: 'client/dist',
   configureWebpack: {
@@ -27,6 +27,6 @@ module.exports = {
     },
     plugins: [
       new MonacoWebpackPlugin({'languages': ['markdown']})
-    ]
+    ],
   },
 }

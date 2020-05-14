@@ -114,14 +114,14 @@
 </template>
 
 <script>
-import store from '../store.js';
-import RenderPanelPdf from './RenderPanelPdf.vue'
-import RenderPanelHtml from './RenderPanelHtml.vue'
-import EmptyRender from './EmptyRender.vue'
-import ServerStatus from './ServerStatus.vue'
+import store from '../store';
+import RenderPanelPdf from './RenderPanelPdf'
+import RenderPanelHtml from './RenderPanelHtml'
+import EmptyRender from './EmptyRender'
+import ServerStatus from './ServerStatus'
 import { Scroll } from 'vuetify/lib/directives'
 import _ from 'lodash'
-import { RemoteRenderer, MarkedRenderer } from '../utils/renderer.js'
+import { RemoteRenderer, MarkedRenderer } from '../utils/renderer'
 
 export default {
   components: { RenderPanelPdf, RenderPanelHtml, EmptyRender, ServerStatus },

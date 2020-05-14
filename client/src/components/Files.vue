@@ -66,7 +66,7 @@
 <script>
 import FilesCreate from './FilesCreate'
 import FilesTree from './FilesTree'
-import store from '../store.js'
+import store from '../store'
 
 export default {
   components: { FilesCreate, FilesTree },
