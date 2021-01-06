@@ -15,7 +15,7 @@
   "dependencies": {
     "@mdi/font": "^5.2.45",
     "archiver": "^4.0.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "babel-runtime": "^6.26.0",
     "bcrypt": "^4.0.1",
     "client-sessions": "^0.8.0",
